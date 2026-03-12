@@ -1,4 +1,5 @@
 interface ImportMetaEnv {
+  readonly MODE: string
   readonly VITE_LOG_LEVEL: string
   readonly VITE_LOG_ENABLE: string
   readonly VITE_APP_NAME: string

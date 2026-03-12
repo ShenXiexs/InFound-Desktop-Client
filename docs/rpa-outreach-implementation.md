@@ -159,9 +159,11 @@ const taskData = {
       payload: {
         text: 'Find creators',
         timeoutMs: 30000,
-        intervalMs: 500,
-        retryGotoUrl: 'https://affiliate.tiktok.com/connection/creator?shop_region=MX',
-        retryGotoPostLoadMs: 2500
+        intervalMs: 500
+      },
+      recovery: {
+        gotoUrl: 'https://affiliate.tiktok.com/connection/creator?shop_region=MX',
+        postLoadWaitMs: 2500
       },
       options: {
         retryCount: 5

@@ -32,11 +32,6 @@ const loginRPA = (): void => {
   window.logger.info('开始登录店铺')
   window.ipc.send(IPC_CHANNELS.RPA_SELLER_LOGIN)
 }
-
-const outReachRPA = (): void => {
-  window.logger.info('开始建联任务')
-  window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH)
-}
 </script>
 
 <template>
@@ -88,9 +83,12 @@ const outReachRPA = (): void => {
           </div>
         </n-layout-header>
         <n-layout-content>
-          <n-flex style="padding: 20px">
+          <n-flex vertical style="padding: 20px; gap: 16px">
             <n-button @click="loginRPA">登录店铺</n-button>
-            <n-button @click="outReachRPA">执行 RPA 模拟</n-button>
+            <n-alert type="info" title="任务触发方式">
+              建联、样品管理、聊天机器人、达人详情任务统一通过终端命令或 IPC 投送触发。
+              请先完成登录，再执行任何机器人任务。
+            </n-alert>
           </n-flex>
         </n-layout-content>
       </n-layout>
@@ -128,3 +126,33 @@ const outReachRPA = (): void => {
   }
 }
 </style>
+const outreachDemoPayload: OutreachFilterConfigInput = {
+  creatorFilters: {
+    productCategorySelections: ['Home Supplies', 'Beauty & Personal Care', 'Phones & Electronics'],
+    avgCommissionRate: 'Less than 20%',
+    contentType: 'Video',
+    creatorAgency: 'Independent creators',
+    spotlightCreator: true,
+    fastGrowing: true,
+    notInvitedInPast90Days: true
+  },
+  followerFilters: {
+    followerAgeSelections: ['18 - 24', '25 - 34'],
+    followerGender: 'Female',
+    followerCountMin: '10000',
+    followerCountMax: '200000'
+  },
+  performanceFilters: {
+    gmvSelections: ['MX$100-MX$1K', 'MX$1K-MX$10K'],
+    itemsSoldSelections: ['10-100', '100-1K'],
+    averageViewsPerVideoMin: '1000',
+    averageViewsPerVideoShoppableVideosOnly: true,
+    averageViewersPerLiveMin: '300',
+    averageViewersPerLiveShoppableLiveOnly: true,
+    engagementRateMinPercent: '5',
+    engagementRateShoppableVideosOnly: true,
+    estPostRate: 'Good',
+    brandCollaborationSelections: ['L\'Oréal Paris', 'Maybelline New York', 'NYX Professional Makeup']
+  },
+  searchKeyword: 'lipstick'
+}

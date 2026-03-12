@@ -1,4 +1,7 @@
 import { LoggerLevel } from '@infound/desktop-shared'
+import type { SellerChatbotPayloadInput } from './rpa-chatbot'
+import type { SellerCreatorDetailPayloadInput } from './rpa-creator-detail'
+import type { OutreachFilterConfigInput } from './rpa-outreach'
 
 export const IPC_CHANNELS = {
   APP_LOGGER: 'app-logger',
@@ -9,7 +12,10 @@ export const IPC_CHANNELS = {
   APP_OPEN_SUB_WINDOW_DEV_TOOLS: 'app-open-sub-window-dev-tools',
 
   RPA_SELLER_LOGIN: 'rpa-seller-login',
-  RPA_SELLER_OUT_REACH: 'rpa-seller-out-reach'
+  RPA_SELLER_OUT_REACH: 'rpa-seller-out-reach',
+  RPA_SELLER_CHATBOT: 'rpa-seller-chatbot',
+  RPA_SELLER_CREATOR_DETAIL: 'rpa-seller-creator-detail',
+  RPA_SAMPLE_MANAGEMENT: 'rpa-sample-management'
 } as const
 
 export type IPCChannelKey = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]
@@ -22,7 +28,10 @@ export interface AppProtocol {
   [IPC_CHANNELS.APP_OPEN_WINDOW_DEV_TOOLS]: { params: ['left' | 'right' | 'bottom' | 'undocked' | 'detach']; return: void }
   [IPC_CHANNELS.APP_OPEN_SUB_WINDOW_DEV_TOOLS]: { params: ['left' | 'right' | 'bottom' | 'undocked' | 'detach']; return: void }
   [IPC_CHANNELS.RPA_SELLER_LOGIN]: { params: []; return: void }
-  [IPC_CHANNELS.RPA_SELLER_OUT_REACH]: { params: []; return: boolean }
+  [IPC_CHANNELS.RPA_SELLER_OUT_REACH]: { params: [OutreachFilterConfigInput?]; return: void }
+  [IPC_CHANNELS.RPA_SELLER_CHATBOT]: { params: [SellerChatbotPayloadInput]; return: void }
+  [IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL]: { params: [SellerCreatorDetailPayloadInput]; return: void }
+  [IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT]: { params: []; return: void }
 }
 
 export interface IPCAPI {
