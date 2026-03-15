@@ -1,17 +1,22 @@
 # XunDa RPA 建联任务实现说明
 
-启动命令统一见：
+当前文档对应的执行入口是 `apps/frontend.rpa.simulation` 中的 Playwright 模拟链路：
 
-- [rpa-startup-reference.md](./rpa-startup-reference.md)
+- [../apps/frontend.rpa.simulation/rpa-playwright-simulation-plan.md](../apps/frontend.rpa.simulation/rpa-playwright-simulation-plan.md)
 
-运行方式、投送 payload 和测试示例见 [rpa-dispatch-reference.md](./rpa-dispatch-reference.md)。
+说明：
+
+1. `登录店铺` 只负责准备登录态，不负责启动建联机器人。
+2. `启动RPA模拟` 只负责启动 Playwright 会话，不自动执行建联机器人。
+3. 建联机器人当前通过单独任务指令 `RPA_SELLER_OUT_REACH` 投送到已启动的 Playwright 会话。
+4. Playwright 模拟会优先使用 `data/playwright/storage-state.json`；如果文件不存在，会打开登录页等待手动登录。
 
 ## 1. 本次实现范围
 
-当前先实现建联任务第一阶段（页面链路 + Creator/Follower/Performance 筛选）：
+当前建联机器人在 Playwright 模拟链路中的实现范围为：
 
-1. 完成登录后，只需确认已检测到登录成功，不要求停留在 affiliate 首页。
-2. 读取当前 URL 中的 `shop_region`（例如 `MX`）。
+1. 使用预先准备好的 Playwright `storageState` 打开浏览器上下文。
+2. 读取模拟 payload 中的 `shop_region`，未传时默认使用 `MX`。
 3. 自动跳转到建联页面：
    - `https://affiliate.tiktok.com/connection/creator?shop_region=<region>`
 4. 进入 `Creators` 板块后，按顺序完成筛选：
@@ -19,9 +24,9 @@
    - `Avg. commission rate`（单选，选中后点击 `Find creators` 文本区域关闭下拉）
    - `Content type`（单选，选中后点击 `Find creators` 文本区域关闭下拉）
    - `Creator agency`（单选，选中后点击 `Find creators` 文本区域关闭下拉）
-   - `Spotlight Creator`（可选复选）
-   - `Fast growing`（可选复选）
-   - `Not invited in past 90 days`（可选复选）
+   - `Spotlight Creator`（可选复选，当前点击 `label#isRisingStar_input`）
+   - `Fast growing`（可选复选，当前点击 `label#isFastGrowing_input`）
+   - `Not invited in past 90 days`（可选复选，当前点击 `label#isInvitedBefore_input`）
 5. 进入 `Followers` 板块后，按顺序完成筛选：
    - `Follower age`（多选，按顺序勾选后点击 `Find creators` 文本区域关闭下拉）
    - `Follower gender`（单选，选中后点击 `Find creators` 文本区域关闭下拉）
@@ -56,20 +61,23 @@
 
 说明：
 
-- `shop_region` 不是写死 `MX`，而是从当前登录链路动态解析。
-- 当 URL 中没有 `shop_region` 时，使用最近一次缓存值（默认 `MX`）。
+- 当前 Playwright 模拟不从 Electron 页面解析登录态。
+- `shop_region` 在 Playwright 模拟中由 payload 提供；未传时默认使用 `MX`。
 
 ## 2. 代码结构
 
-- 建联任务定义与入口（保留顶层 `taskData`、筛选配置、筛选步骤构造与执行触发）：
+- 建联任务定义与业务步骤：
   - `apps/frontend.rpa.simulation/src/main/modules/ipc/rpa-controller.ts`
+  - `apps/frontend.rpa.simulation/src/main/modules/rpa/outreach/support.ts`
 - 通用 DSL 执行器：
   - `apps/frontend.rpa.simulation/src/main/modules/rpa/task-dsl/browser-actions.ts`
   - `apps/frontend.rpa.simulation/src/main/modules/rpa/task-dsl/browser-action-runner.ts`
   - `apps/frontend.rpa.simulation/src/main/modules/rpa/task-dsl/types.ts`
   - `apps/frontend.rpa.simulation/src/main/modules/rpa/task-dsl/runner.ts`
-- 页面能力：
-  - `apps/frontend.rpa.simulation/src/main/windows/tk-wcv.ts`
+- Playwright 执行入口与目标实现：
+  - `apps/frontend.rpa.simulation/src/main/modules/rpa/playwright-simulation/playwright-simulation-service.ts`
+  - `apps/frontend.rpa.simulation/src/main/modules/rpa/playwright-simulation/playwright-browser-target.ts`
+  - `apps/frontend.rpa.simulation/src/main/modules/rpa/playwright-simulation/playwright-response-capture.ts`
 
 ## 3. DSL 任务定义（当前版本）
 
@@ -159,11 +167,9 @@ const taskData = {
       payload: {
         text: 'Find creators',
         timeoutMs: 30000,
-        intervalMs: 500
-      },
-      recovery: {
-        gotoUrl: 'https://affiliate.tiktok.com/connection/creator?shop_region=MX',
-        postLoadWaitMs: 2500
+        intervalMs: 500,
+        retryGotoUrl: 'https://affiliate.tiktok.com/connection/creator?shop_region=MX',
+        retryGotoPostLoadMs: 2500
       },
       options: {
         retryCount: 5
@@ -412,22 +418,30 @@ const searchKeyword = ''
 23. `Collectibles` -> `951432`
 24. `Jewelry Accessories & Derivatives` -> `953224`
 
-## 4. 触发方式
+## 4. Playwright 模拟入口
 
-1. 启动应用：
-   - `pnpm --filter ./apps/frontend.rpa.simulation exec electron-vite dev --mode dev`
-2. 终端先登录：
-   - `login`
-3. 再触发建联任务：
-   - `outreach`
+1. 启动 `apps/frontend.rpa.simulation`。
+2. 可选地准备 Playwright 登录态文件：
+   - `data/playwright/storage-state.json`
+3. 点击渲染层按钮：
+   - `启动RPA模拟`
+4. Playwright 会话启动后，再投送：
+   - `RPA_SELLER_OUT_REACH`
+5. 当前如果没有单独传入建联任务 payload，建联默认使用：
+   - `createDemoOutreachFilterConfig()`
 
-## 5. 当前行为
+说明：
 
-`outreach` 命令执行时：
+1. 本文档不再记录旧的 `login + outreach` Electron 机器人触发方式。
+2. 当前建联只会在 Playwright 会话已启动后执行。
 
-1. `RPAController.sellerOutReach()` 检查登录态，并解析 `shop_region`。
-2. 生成目标 URL：`connection/creator?shop_region=<region>`。
-3. 执行通用动作 DSL：
+## 5. 当前 Playwright 执行行为
+
+`RPA_SELLER_OUT_REACH` 投送后，建联阶段当前行为如下：
+
+1. `RPAController.sellerOutReach()` 把任务投送给当前 `PlaywrightSimulationService` 会话。
+2. `PlaywrightSimulationService.runOutreach()` 生成目标 URL：`connection/creator?shop_region=<region>`。
+3. 使用 Playwright `Page` 实现的 `PlaywrightBrowserActionTarget` 执行通用 BrowserTask DSL：
    - `goto`：跳转建联页面并等待首屏加载。
    - `waitForBodyText`：检测 `Find creators` 文案。
    - `clickByText`：点击 `Creators`。
@@ -435,7 +449,7 @@ const searchKeyword = ''
    - `Avg. commission rate`：单选后点击 `Find creators` 关闭。
    - `Content type`：单选后点击 `Find creators` 关闭。
    - `Creator agency`：单选后点击 `Find creators` 关闭。
-   - `Spotlight Creator / Fast growing / Not invited in past 90 days`：按布尔开关决定是否勾选。
+   - `Spotlight Creator / Fast growing / Not invited in past 90 days`：按布尔开关决定是否勾选，当前会滚动到控件所在区域后再点对应 `label`。
    - `clickByText`：点击 `Followers`。
    - `Follower age`：多选后点击 `Find creators` 关闭。
    - `Follower gender`：单选后点击 `Find creators` 关闭。
@@ -446,12 +460,16 @@ const searchKeyword = ''
    - `Est. post rate`：单选后点击 `Find creators` 关闭。
    - `Brand collaborations`：按品牌名定位，必要时自动滚动后点击；页面当前不存在的品牌会跳过，不阻断后续搜索与达人列表采集。
    - `Search keyword`：填入搜索词后，先点击一次 `Find creators` 文本区域，再点击一次搜索框本身，然后按 `Enter` 提交搜索。
-4. 若未检测到 `Find creators`：
+4. 当前任务日志会输出每一步的具体动作摘要，例如：
+   - `selectDropdownSingle trigger=Content type option=Video`
+   - `setCheckbox [勾选 Fast growing] selector=label#isFastGrowing_input checked=true`
+5. 若某个筛选步骤失败：
+   - 先按步骤配置重试，当前大多数筛选项最多重试 3 次；
+   - 若该步骤 `onError = continue`，则在重试耗尽后直接跳到下一个筛选项，不阻塞整条筛选链。
+6. 若未检测到 `Find creators`：
    - 在 `waitForBodyText` 的失败路径中再次 `goto` 同一 URL；
    - 抛错触发 DSL 步骤重试，直至成功或超过重试上限。
-5. 建联结果导出完成后：
-   - 自动跳回 `https://affiliate.tiktok.com/platform/homepage?shop_region=<region>`；
-   - 回到 affiliate 首页待命，等待后续任务指令。
+7. 建联结果导出完成后，当前 Playwright 会话会继续保持打开，等待后续任务指令，不再回跳 Electron 首页。
 
 ## 6. 从样品管理沉淀的可复用基础动作
 

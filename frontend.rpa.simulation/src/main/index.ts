@@ -7,6 +7,8 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { SellerChatbotPayloadInput } from '@common/types/rpa-chatbot'
 import type { SellerCreatorDetailPayloadInput } from '@common/types/rpa-creator-detail'
 import type { OutreachFilterConfigInput } from '@common/types/rpa-outreach'
+import type { SampleManagementPayloadInput } from '@common/types/rpa-sample-management'
+import type { PlaywrightSimulationPayloadInput } from '@common/types/rpa-simulation'
 import { IPCManager } from './modules/ipc/base/ipc-manager'
 import { RPAController } from './modules/ipc/rpa-controller'
 import { LoggerController } from './modules/ipc/logger-controller'
@@ -64,7 +66,7 @@ const setupTerminalRPACLI = (rpaController: RPAController): void => {
 
   const printHelp = (): void => {
     logger.info(
-      '终端命令: login | sample-management | open-sample-management | outreach | outreach-demo | outreach-json <payload.json> | chatbot <creator_id> | chatbot-demo | chatbot-json <payload.json> | creator-detail <creator_id> | creator-detail-demo | creator-detail-json <payload.json> | help | exit'
+      '终端命令: login | start-simulation | start-simulation-headless | start-simulation-json <payload.json> | stop-simulation | sample-management [tab|tab1,tab2] | sample-management-json <payload.json> | outreach | outreach-demo | outreach-json <payload.json> | chatbot <creator_id> | chatbot-demo | chatbot-json <payload.json> | creator-detail <creator_id> | creator-detail-demo | creator-detail-json <payload.json> | help | exit'
     )
   }
 
@@ -79,10 +81,47 @@ const setupTerminalRPACLI = (rpaController: RPAController): void => {
     try {
       if (command === 'login') {
         await rpaController.sellerLogin()
+      } else if (command === 'start-simulation') {
+        await rpaController.startSimulationSession()
+      } else if (command === 'start-simulation-headless') {
+        await rpaController.startSimulationSession({ headless: true })
+      } else if (command === 'start-simulation-json') {
+        const payloadPath = trimmedLine.slice(commandToken.length).trim()
+        if (!payloadPath) {
+          logger.warn('缺少 JSON 文件路径，示例: start-simulation-json docs/examples/playwright-simulation-demo-payload.json')
+        } else {
+          const resolvedPayloadPath = resolveCliJsonPath(payloadPath)
+          logger.info(`读取 Playwright 会话启动 JSON: ${resolvedPayloadPath}`)
+          const fileContent = await readFile(resolvedPayloadPath, 'utf8')
+          const payload = JSON.parse(fileContent) as PlaywrightSimulationPayloadInput
+          await rpaController.startSimulationSession(payload)
+        }
+      } else if (command === 'stop-simulation') {
+        await rpaController.closeSimulationSession()
       } else if (command === 'sample-management') {
-        await rpaController.sampleManagement()
-      } else if (command === 'open-sample-management') {
-        await rpaController.openSampleManagement()
+        const sampleArg = trimmedLine.slice(commandToken.length).trim()
+        if (!sampleArg) {
+          await rpaController.runSampleManagement()
+        } else {
+          const tabs = sampleArg
+            .split(',')
+            .map((token) => token.trim())
+            .filter(Boolean)
+          await rpaController.runSampleManagement({
+            tabs
+          } as SampleManagementPayloadInput)
+        }
+      } else if (command === 'sample-management-json') {
+        const payloadPath = trimmedLine.slice(commandToken.length).trim()
+        if (!payloadPath) {
+          logger.warn('缺少 JSON 文件路径，示例: sample-management-json docs/examples/sample-management-completed-payload.json')
+        } else {
+          const resolvedPayloadPath = resolveCliJsonPath(payloadPath)
+          logger.info(`读取样品管理任务 JSON: ${resolvedPayloadPath}`)
+          const fileContent = await readFile(resolvedPayloadPath, 'utf8')
+          const payload = JSON.parse(fileContent) as SampleManagementPayloadInput
+          await rpaController.runSampleManagement(payload)
+        }
       } else if (command === 'outreach') {
         await rpaController.runSellerOutReach()
       } else if (command === 'outreach-demo') {
@@ -123,10 +162,10 @@ const setupTerminalRPACLI = (rpaController: RPAController): void => {
         if (!creatorId) {
           logger.warn('缺少 creator_id，示例: creator-detail 7495400123324336701')
         } else {
-          await rpaController.runSellerCreatorDetailCrawler({ creatorId })
+          await rpaController.runSellerCreatorDetail({ creatorId })
         }
       } else if (command === 'creator-detail-demo') {
-        await rpaController.runSellerCreatorDetailCrawler(rpaController.getDemoSellerCreatorDetailPayload())
+        await rpaController.runSellerCreatorDetail(rpaController.getDemoSellerCreatorDetailPayload())
       } else if (command === 'creator-detail-json') {
         const payloadPath = trimmedLine.slice(commandToken.length).trim()
         if (!payloadPath) {
@@ -136,7 +175,7 @@ const setupTerminalRPACLI = (rpaController: RPAController): void => {
           logger.info(`读取达人详情机器人 JSON: ${resolvedPayloadPath}`)
           const fileContent = await readFile(resolvedPayloadPath, 'utf8')
           const payload = JSON.parse(fileContent) as SellerCreatorDetailPayloadInput
-          await rpaController.runSellerCreatorDetailCrawler(payload)
+          await rpaController.runSellerCreatorDetail(payload)
         }
       } else if (command === 'help') {
         printHelp()
@@ -155,6 +194,7 @@ const setupTerminalRPACLI = (rpaController: RPAController): void => {
 
   app.on('before-quit', () => {
     rl.close()
+    void rpaController.closeSimulationSession()
   })
 }
 
@@ -193,6 +233,9 @@ app.whenReady().then(async () => {
   await appWindowsAndViewsManager.initMainWindow()
   appWindowsAndViewsManager.mainWindow.showWindow()
   setupTerminalRPACLI(rpaController)
+  app.on('before-quit', () => {
+    void rpaController.closeSimulationSession()
+  })
 
   app.on('activate', async function () {
     // On macOS it's common to re-create a window in the app when the

@@ -22,12 +22,23 @@ export class IPCManager {
       switch (type) {
         case IPCType.INVOKE:
           // 渲染进程 invoke -> 主进程 handle
-          ipcMain.handle(channel, (...args) => controller[methodName](...args))
+          ipcMain.handle(channel, async (...args) => {
+            try {
+              return await controller[methodName](...args)
+            } catch (error) {
+              logger.error(`[IPC] invoke 通道执行失败: channel=${channel} error=${(error as Error)?.message || error}`)
+              throw error
+            }
+          })
           break
 
         case IPCType.SEND:
           // 渲染进程 send -> 主进程 on
-          ipcMain.on(channel, (...args) => controller[methodName](...args))
+          ipcMain.on(channel, (...args) => {
+            Promise.resolve(controller[methodName](...args)).catch((error) => {
+              logger.error(`[IPC] send 通道执行失败: channel=${channel} error=${(error as Error)?.message || error}`)
+            })
+          })
           break
 
         case IPCType.ON:

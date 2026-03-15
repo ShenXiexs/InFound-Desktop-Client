@@ -1,0 +1,1016 @@
+{
+  "generated_at": "2026-03-15T13:40:44.768Z",
+  "total": 2,
+  "items": [
+    {
+      "creator_oecuid": {
+        "value": "7493997266162125689",
+        "is_authorized": true,
+        "status": 0
+      },
+      "handle": {
+        "value": "monsseeeee",
+        "is_authorized": true,
+        "status": 0
+      },
+      "nickname": {
+        "value": "monsseeeee",
+        "is_authorized": true,
+        "status": 0
+      },
+      "avatar": {
+        "value": {
+          "thumb_url_list": [
+            "https://p16-sign-va.tiktokcdn.com/tos-maliva-avt-0068/6c62e55e9733e4af7175c84a9a4fa717~tplv-tiktokx-cropcenter:168:168.webp?dr=14577&refresh_token=940d1a02&x-expires=1773752400&x-signature=O%2FO2yU7R6ysayjSw%2F7dlPWNzyG4%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=39dffb78&idc=my"
+          ],
+          "url_list": [
+            "https://p16-sign-va.tiktokcdn.com/tos-maliva-avt-0068/6c62e55e9733e4af7175c84a9a4fa717~tplv-tiktokx-cropcenter:720:720.webp?dr=14579&refresh_token=444f66c7&x-expires=1773752400&x-signature=rXpiLVBiFdCdcTRZweyDsRDKSCs%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=39dffb78&idc=my"
+          ]
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "selection_region": {
+        "value": "MX",
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_official_recommend": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_show_recom_icon": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_open_account": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "main_industry": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_avg_uv": {
+        "value": "1785",
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_quickly_response": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_active_creator": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_high_sample_dispatch_rate": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "follower_cnt": {
+        "value": "29232",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_gpm_reference": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_gpm_reference": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_bind_mcn_name": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_gpm": {
+        "value": {
+          "minimal": "0",
+          "maximum": "0",
+          "symbol": "MX$",
+          "minimal_format": "MX$0.00",
+          "maximum_format": "MX$0.00"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_avg_view_cnt": {
+        "value": "21865",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_gpm": {
+        "value": {
+          "minimal": "0",
+          "maximum": "0",
+          "symbol": "MX$",
+          "minimal_format": "MX$0.00",
+          "maximum_format": "MX$0.00"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_video_data": {
+        "value": [
+          {
+            "video": {
+              "id": "v14044g50000d5n7livog65vk4nv4k20",
+              "duration": 30.673,
+              "post_url": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-p-0037/o8oJ3QkjQgCfIeXDQSPA4WM9XX8LACyRDgJceZ~tplv-noop.image?dr=18692&refresh_token=4400683a&x-expires=1773603665&x-signature=9gAKeic%2F1t98yhqx0Km%2B6khi4EQ%3D&t=9276707c&ps=14f1eb3e&shp=9e36835a&shcp=b5bd6545&idc=my&VideoID=v14044g50000d5n7livog65vk4nv4k20",
+              "media_type": "video",
+              "video_infos": [
+                {
+                  "main_url": "https://v16m-default.tiktokcdn.com/76c9ddc4b2e2dc1dc3ea6f3173f70d8a/69b70b51/video/tos/alisg/tos-alisg-pve-0037c001/o4sIkjX3oQMIXegAWIZA8LQhScIfjJfDoClP9C/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=640&bt=320&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=5&rc=NjdlOjg8NWczZDM1NjZlM0BpM255N3k5cmw6ODMzODczNEA2X2FhNTM2XzAxNWIvYTFgYSMvMWtoMmRzaWthLS1kMTFzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e00088000",
+                  "backup_url": "https://v16m.byteicdn.com/76c9ddc4b2e2dc1dc3ea6f3173f70d8a/69b70b51/video/tos/alisg/tos-alisg-pve-0037c001/o4sIkjX3oQMIXegAWIZA8LQhScIfjJfDoClP9C/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=640&bt=320&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=5&rc=NjdlOjg8NWczZDM1NjZlM0BpM255N3k5cmw6ODMzODczNEA2X2FhNTM2XzAxNWIvYTFgYSMvMWtoMmRzaWthLS1kMTFzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e00088000&cc=10",
+                  "url_expire": 1773603665,
+                  "width": 576,
+                  "height": 1024,
+                  "file_hash": "3f11656aa2fe8942d39cb2fa01a0ba7c",
+                  "format": "",
+                  "size": 1258191,
+                  "bitrate": 328155,
+                  "video_quality": "lowest"
+                }
+              ]
+            },
+            "name": "Lo ame !! #moira #moiracosmetics ",
+            "release_date": "1768848168",
+            "item_id": "7597145005580487954",
+            "like_cnt": 4322,
+            "play_cnt": 51897,
+            "comment_cnt": 10,
+            "video_products": [
+              {
+                "name": "MARVELOUS BAKED BLUSH - MOIRA | Rubor horneado",
+                "image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/246a2cb203e94b27b616bc9a6249ccd7~tplv-aphluv4xwc-origin-webp.webp?dr=15572&from=3049088325&idc=my&ps=933b5bde&shcp=1e1776da&shp=b5bd6545&t=555f072d",
+                "product_id": "1732720321158547239",
+                "min_sale_price": {
+                  "currency": "MXN",
+                  "price": "188",
+                  "formatted_price": "MX$188"
+                },
+                "max_sale_price": {
+                  "currency": "MXN",
+                  "price": "188",
+                  "formatted_price": "MX$188"
+                },
+                "promoted_product_num": "1953",
+                "status": 1
+              }
+            ]
+          },
+          {
+            "video": {
+              "id": "v1c044g50000d6jllhnog65kri4c7p40",
+              "duration": 23.034,
+              "post_url": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-p-0037/oUhxQQcReE21u2DHBVgFypt6QfWGpGEBRFrpnA~tplv-noop.image?dr=18692&refresh_token=414687ed&x-expires=1773603658&x-signature=hE1G2uLdt%2Fs04xVwqWacyXLypdg%3D&t=9276707c&ps=14f1eb3e&shp=9e36835a&shcp=b5bd6545&idc=my&VideoID=v1c044g50000d6jllhnog65kri4c7p40",
+              "media_type": "video",
+              "video_infos": [
+                {
+                  "main_url": "https://v16m-default.tiktokcdn.com/2be15320b0bfcc6bc666037f4bc2ae53/69b70b4a/video/tos/alisg/tos-alisg-pve-0037c001/o4AVBEcpcEGbURhIrQOfBFtp9DfQu1QpyQHGRg/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=606&bt=303&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=5&rc=NjNoOztlaWVoNDc0ZjtlNkBpM3NmbG45cmtvOTMzODczNEA0YV8wXzVfXmMxNC02YS00YSMxNDFvMmRraWdhLS1kMWBzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e000b8000",
+                  "backup_url": "https://v16m.byteicdn.com/2be15320b0bfcc6bc666037f4bc2ae53/69b70b4a/video/tos/alisg/tos-alisg-pve-0037c001/o4AVBEcpcEGbURhIrQOfBFtp9DfQu1QpyQHGRg/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=606&bt=303&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=5&rc=NjNoOztlaWVoNDc0ZjtlNkBpM3NmbG45cmtvOTMzODczNEA0YV8wXzVfXmMxNC02YS00YSMxNDFvMmRraWdhLS1kMWBzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e000b8000&cc=10",
+                  "url_expire": 1773603658,
+                  "width": 576,
+                  "height": 1024,
+                  "file_hash": "6e7920f76994bc800bae48244415dcfa",
+                  "format": "",
+                  "size": 895151,
+                  "bitrate": 310897,
+                  "video_quality": "lowest"
+                }
+              ]
+            },
+            "name": "El mejor blush 🙂‍↔️💞#fyp #beautycreations #tiktokshop ",
+            "release_date": "1772575445",
+            "item_id": "7613153518576274706",
+            "like_cnt": 241,
+            "play_cnt": 7219,
+            "comment_cnt": 0,
+            "video_products": [
+              {
+                "name": "Liquid Blush - Rubor Líquido",
+                "image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/ad0660ff58ed4456ad46ef56c788c601~tplv-aphluv4xwc-origin-webp.webp?dr=15572&from=3049088325&idc=my&ps=933b5bde&shcp=1e1776da&shp=b5bd6545&t=555f072d",
+                "product_id": "1731953012227540596",
+                "min_sale_price": {
+                  "currency": "MXN",
+                  "price": "179",
+                  "formatted_price": "MX$179"
+                },
+                "max_sale_price": {
+                  "currency": "MXN",
+                  "price": "179",
+                  "formatted_price": "MX$179"
+                },
+                "promoted_product_num": "2018",
+                "status": 1
+              }
+            ]
+          },
+          {
+            "video": {
+              "id": "v14044g50000d5k0lovog65sda1ofv90",
+              "duration": 297.2,
+              "post_url": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-p-0037/o0fRIEr1S4jL9DQof3BWIxcCgCFyBpAAaPDUmE~tplv-noop.image?dr=18692&refresh_token=d4a60931&x-expires=1773603932&x-signature=3eeVykuogc0TsJ0hSHP8R5dziJE%3D&t=9276707c&ps=14f1eb3e&shp=9e36835a&shcp=b5bd6545&idc=my&VideoID=v14044g50000d5k0lovog65sda1ofv90",
+              "media_type": "video",
+              "video_infos": [
+                {
+                  "main_url": "https://v16m-default.tiktokcdn.com/e8a96c1425f106fe2d2a72894a8e6b15/69b70c5c/video/tos/alisg/tos-alisg-pve-0037c001/o4CApBE4rQDPgcAjI81EBBQoSUF6RafEOdr1fb/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=1622&bt=811&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=0&rc=aTg8NWY8PDc1aTdnNzQ1Z0BpM3lyZHY5cnIzODMzODczNEBgMTMuMC5iNS8xXzJhNWItYSM2Yy5hMmRzaWhhLS1kMTFzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e00098000",
+                  "backup_url": "https://v16m.byteicdn.com/e8a96c1425f106fe2d2a72894a8e6b15/69b70c5c/video/tos/alisg/tos-alisg-pve-0037c001/o4CApBE4rQDPgcAjI81EBBQoSUF6RafEOdr1fb/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=1622&bt=811&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=0&rc=aTg8NWY8PDc1aTdnNzQ1Z0BpM3lyZHY5cnIzODMzODczNEBgMTMuMC5iNS8xXzJhNWItYSM2Yy5hMmRzaWhhLS1kMTFzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e00098000&cc=10",
+                  "url_expire": 1773603932,
+                  "width": 576,
+                  "height": 1024,
+                  "file_hash": "15a09e29ee33e747ed63227d345296cb",
+                  "format": "",
+                  "size": 30864431,
+                  "bitrate": 830805,
+                  "video_quality": "normal"
+                }
+              ]
+            },
+            "name": "Tuto de cejitas xfinnn, espero que me haya explicado bien 😭🫰🏻",
+            "release_date": "1768426257",
+            "item_id": "7595332913839754514",
+            "like_cnt": 4875,
+            "play_cnt": 41987,
+            "comment_cnt": 12,
+            "video_products": [
+              {
+                "name": "GEL DE CEJAS GOT2B CON APLICADOR GEL DE ALTA FIJACION Y GRAN DURABILIDAD",
+                "image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a967c342b1224bc3ad5292b9d8a96029~tplv-aphluv4xwc-origin-webp.webp?dr=15572&from=3049088325&idc=my&ps=933b5bde&shcp=1e1776da&shp=b5bd6545&t=555f072d",
+                "product_id": "1731553965167118087",
+                "min_sale_price": {
+                  "currency": "MXN",
+                  "price": "259",
+                  "formatted_price": "MX$259"
+                },
+                "max_sale_price": {
+                  "currency": "MXN",
+                  "price": "259",
+                  "formatted_price": "MX$259"
+                },
+                "promoted_product_num": "51",
+                "status": 1
+              }
+            ]
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "shop_collect_status": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_creator_blocked_by_shop": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_fast_growing": {
+        "value": true,
+        "is_authorized": true,
+        "status": 0
+      },
+      "units_sold": {
+        "value": "13",
+        "is_authorized": true,
+        "status": 0
+      },
+      "med_gmv_revenue": {
+        "value": {
+          "value": "2338.33",
+          "symbol": "MX$",
+          "format": "MX$2,338.3"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "has_collaborated": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "category": {
+        "value": [
+          {
+            "starling_key": "magellan_601450",
+            "name": "Beauty & Personal Care"
+          },
+          {
+            "starling_key": "magellan_605248",
+            "name": "Fashion Accessories"
+          },
+          {
+            "starling_key": "magellan_601152",
+            "name": "Womenswear & Underwear"
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_engagement": {
+        "value": 1193,
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_gmv": {
+        "value": {
+          "value": "2338.33",
+          "symbol": "MX$",
+          "format": "MX$2,338.3"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "live_gmv": {
+        "value": {
+          "value": "0",
+          "symbol": "MX$",
+          "format": "MX$0.00"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_engagement": {
+        "value": 923,
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_avg_view_cnt": {
+        "value": "24999",
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_play_cnt_med": {
+        "value": "5420",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_play_cnt_med": {
+        "value": "3230",
+        "is_authorized": true,
+        "status": 0
+      },
+      "med_gmv_revenue_range": {
+        "value": "MX$1K-MX$10K",
+        "is_authorized": true,
+        "status": 0
+      },
+      "units_sold_range": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_follower_age": {
+        "value": [
+          {
+            "key": "18-24",
+            "value": null
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_follower_gender": {
+        "value": [
+          {
+            "key": "Female",
+            "value": "5418"
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_med_view_cnt": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_med_view_cnt": {
+        "value": "5420",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_med_view_cnt": {
+        "value": "3230",
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_med_share_cnt": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_follower_ages": {
+        "value": [
+          "18-24",
+          "25-34"
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_permission_tag": {
+        "value": 2,
+        "is_authorized": true,
+        "status": 0
+      },
+      "recommend_reason": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_fulfillment_rate": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "has_invited_before_90d": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_level": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_fulfillment_reviews": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_fulfillment_score_90d": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "pps_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_in_flat_fee_whitelist": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_rising_star": {
+        "value": true,
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_total_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_total_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_fulfillment_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_fulfillment_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_diligence_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_diligence_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_sales_ability_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_sales_ability_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_content_quality_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_content_quality_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_evaluate_duration": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "vertical_pro_category": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "vat": {
+        "is_authorized": true,
+        "status": 0
+      }
+    },
+    {
+      "creator_oecuid": {
+        "value": "7494794588646443816",
+        "is_authorized": true,
+        "status": 0
+      },
+      "handle": {
+        "value": "andreabaldenebro_makeup",
+        "is_authorized": true,
+        "status": 0
+      },
+      "nickname": {
+        "value": "𝔸𝕟𝕕𝕣𝕖𝕒𝕄𝕦aa_𝕄𝕒𝕜𝕖𝕌p",
+        "is_authorized": true,
+        "status": 0
+      },
+      "avatar": {
+        "value": {
+          "thumb_url_list": [
+            "https://p16-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/eba156f1db99022dece06255f8dc7b9d~tplv-tiktokx-cropcenter:168:168.webp?dr=14577&refresh_token=d8446e01&x-expires=1773752400&x-signature=L%2FOV5bPnUay04cQZ5GOehFpIkIo%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=39dffb78&idc=my"
+          ],
+          "url_list": [
+            "https://p16-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/eba156f1db99022dece06255f8dc7b9d~tplv-tiktokx-cropcenter:720:720.webp?dr=14579&refresh_token=05ec7357&x-expires=1773752400&x-signature=PVH1P%2FD4DpGk7%2FpwooHTrOrj8sI%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=39dffb78&idc=my"
+          ]
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "selection_region": {
+        "value": "MX",
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_official_recommend": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_show_recom_icon": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_open_account": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "main_industry": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_avg_uv": {
+        "value": "61804",
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_quickly_response": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_active_creator": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_high_sample_dispatch_rate": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "follower_cnt": {
+        "value": "85360",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_gpm_reference": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_gpm_reference": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_bind_mcn_name": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_gpm": {
+        "value": {
+          "minimal": "0",
+          "maximum": "0",
+          "symbol": "MX$",
+          "minimal_format": "MX$0.00",
+          "maximum_format": "MX$0.00"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_avg_view_cnt": {
+        "value": "78563",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_gpm": {
+        "value": {
+          "minimal": "0",
+          "maximum": "0",
+          "symbol": "MX$",
+          "minimal_format": "MX$0.00",
+          "maximum_format": "MX$0.00"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_video_data": {
+        "value": [
+          {
+            "video": {
+              "id": "v1c044g50000d6d9ss7og65qjhen8qig",
+              "duration": 65.834,
+              "post_url": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-p-0037/oYBLJppBOo5EEzFRc1QCGfAcrPgfKw11tsmQPD~tplv-noop.image?dr=18692&refresh_token=78f228ef&x-expires=1773603700&x-signature=DoIUkQEkol5sfAKYC3nEJL9aWhE%3D&t=9276707c&ps=14f1eb3e&shp=9e36835a&shcp=b5bd6545&idc=my&VideoID=v1c044g50000d6d9ss7og65qjhen8qig",
+              "media_type": "video",
+              "video_infos": [
+                {
+                  "main_url": "https://v16m-default.tiktokcdn.com/710edabb1ad8dd1d626fb0731ea8cc6a/69b70b74/video/tos/alisg/tos-alisg-pve-0037c001/o8ErvwQgcTAFKEpne1R11mfLC5D6BBIIogopOa/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=1000&bt=500&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=5&rc=N2c0Nzs8NzQ0ZGk7ZzdoM0BpanRxa3Q5cnY8OTMzODczNEA2MmAuLy1jNTExLjVfXjMvYSNmNWJnMmQ0cGFhLS1kMWBzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e00090000",
+                  "backup_url": "https://v16m.byteicdn.com/710edabb1ad8dd1d626fb0731ea8cc6a/69b70b74/video/tos/alisg/tos-alisg-pve-0037c001/o8ErvwQgcTAFKEpne1R11mfLC5D6BBIIogopOa/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=1000&bt=500&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=5&rc=N2c0Nzs8NzQ0ZGk7ZzdoM0BpanRxa3Q5cnY8OTMzODczNEA2MmAuLy1jNTExLjVfXjMvYSNmNWJnMmQ0cGFhLS1kMWBzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e00090000&cc=10",
+                  "url_expire": 1773603700,
+                  "width": 576,
+                  "height": 1024,
+                  "file_hash": "d45a375bbd639418fbd6eb48b499b6d7",
+                  "format": "",
+                  "size": 4218204,
+                  "bitrate": 512586,
+                  "video_quality": "lowest"
+                }
+              ]
+            },
+            "name": "Es la segunda vez que encargo esta funda está súper barata y linda la verdad🥰 CORRAN A ENCARGAR LA SUYA🥰 #parati #andreabaldenebro #dechava #tiktokshop ",
+            "release_date": "1771740790",
+            "item_id": "7609568695332982037",
+            "like_cnt": 151,
+            "play_cnt": 8284,
+            "comment_cnt": 4,
+            "video_products": [
+              {
+                "name": "Soporte magnético transparente para funda TPU iPhone compatible con iPhone 17 Air 16 Pro Max 15 14 Plus 13 12 11",
+                "image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/44e29fdb9f1e450099c945cc0a28b239~tplv-aphluv4xwc-origin-webp.webp?dr=15572&from=3049088325&idc=my&ps=933b5bde&shcp=1e1776da&shp=b5bd6545&t=555f072d",
+                "product_id": "1734063922932451080",
+                "min_sale_price": {
+                  "currency": "MXN",
+                  "price": "89",
+                  "formatted_price": "MX$89"
+                },
+                "max_sale_price": {
+                  "currency": "MXN",
+                  "price": "189",
+                  "formatted_price": "MX$189"
+                },
+                "promoted_product_num": "465",
+                "status": 1
+              }
+            ]
+          },
+          {
+            "video": {
+              "id": "v1c044g50000d64238fog65p8ngd7h5g",
+              "duration": 312.6,
+              "post_url": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-p-0037/oYKeBDfDcIysRTpEiJPLyixCIBYAgEGiFBohIg~tplv-noop.image?dr=18692&refresh_token=27c1f055&x-expires=1773603947&x-signature=9%2FkQwEk8OMm2WNeHAJS2sVxTlBg%3D&t=9276707c&ps=14f1eb3e&shp=9e36835a&shcp=b5bd6545&idc=my&VideoID=v1c044g50000d64238fog65p8ngd7h5g",
+              "media_type": "video",
+              "video_infos": [
+                {
+                  "main_url": "https://v16m-default.tiktokcdn.com/ac9e28ebe2b140f1c2f7f5fe74ba2399/69b70c6b/video/tos/alisg/tos-alisg-pve-0037c001/o4iIRCWmpQcXEFByJBiF5eGEIGDhivAnhgf0h8/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=2282&bt=1141&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=0&rc=OzQ8PDo7NWQ0NTo1NGY3O0BpamtncXM5cjs1OTMzODczNEAvYi1jLzNfNjUxXjEvYGIvYSMyNGQ1MmRjMDFhLS1kMWBzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e000a0000",
+                  "backup_url": "https://v16m.byteicdn.com/ac9e28ebe2b140f1c2f7f5fe74ba2399/69b70c6b/video/tos/alisg/tos-alisg-pve-0037c001/o4iIRCWmpQcXEFByJBiF5eGEIGDhivAnhgf0h8/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=2282&bt=1141&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=0&rc=OzQ8PDo7NWQ0NTo1NGY3O0BpamtncXM5cjs1OTMzODczNEAvYi1jLzNfNjUxXjEvYGIvYSMyNGQ1MmRjMDFhLS1kMWBzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e000a0000&cc=10",
+                  "url_expire": 1773603947,
+                  "width": 576,
+                  "height": 1024,
+                  "file_hash": "b89d9f83d928759e3ed5067d012dd6f3",
+                  "format": "",
+                  "size": 45662117,
+                  "bitrate": 1168576,
+                  "video_quality": "normal"
+                }
+              ]
+            },
+            "name": "Consíguelas y me lo agradeces después🥰😍✨ #andreabaldenebro #dechava #pestañas #kit #tiktokshop ",
+            "release_date": "1770530109",
+            "item_id": "7604368885889895700",
+            "like_cnt": 93,
+            "play_cnt": 2681,
+            "comment_cnt": 2,
+            "video_products": [
+              {
+                "name": "Cmaxome Kit de Extensión de Pestañas Individuales MMQ 270 Pestañas Postizas de Rizo D con Adhesivo y Sellador Removedor Cepillo Pinzas 60+80+100D para Principiantes",
+                "image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/7295b6824dba4a6798c9704848ddd8af~tplv-aphluv4xwc-origin-webp.webp?dr=15572&from=3049088325&idc=my&ps=933b5bde&shcp=1e1776da&shp=b5bd6545&t=555f072d",
+                "product_id": "1731776213118583956",
+                "min_sale_price": {
+                  "currency": "MXN",
+                  "price": "299.98",
+                  "formatted_price": "MX$300"
+                },
+                "max_sale_price": {
+                  "currency": "MXN",
+                  "price": "299.98",
+                  "formatted_price": "MX$300"
+                },
+                "promoted_product_num": "718",
+                "status": 1
+              }
+            ]
+          },
+          {
+            "video": {
+              "id": "v14044g50000d6o876fog65jammgnf00",
+              "duration": 343.334,
+              "post_url": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-p-0037/ogAc4EoGTCCNebuLIJGQeAQVIDQheYuArjQANz~tplv-noop.image?dr=18692&refresh_token=4e8c8586&x-expires=1773603978&x-signature=ftEbk1r0r6CNwau6e8T%2BJ0hsKGw%3D&t=9276707c&ps=14f1eb3e&shp=9e36835a&shcp=b5bd6545&idc=my&VideoID=v14044g50000d6o876fog65jammgnf00",
+              "media_type": "video",
+              "video_infos": [
+                {
+                  "main_url": "https://v16m-default.tiktokcdn.com/fe549bca5993e8fa7aa17f8fe4bea1c6/69b70c8a/video/tos/alisg/tos-alisg-pve-0037c001/o0PCAfEwLwMIB6FER0ziAMAqhA2iIr7a0vHVJS/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=3298&bt=1649&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=0&rc=NjZpOGk0aTc6Ozo6ZTdkOkBpM2lqcG05cjk7OTMzODczNEA2NTVfNS0uXjYxYS4yLTA1YSMta2peMmRjNGxhLS1kMTFzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e000a0000",
+                  "backup_url": "https://v16m.byteicdn.com/fe549bca5993e8fa7aa17f8fe4bea1c6/69b70c8a/video/tos/alisg/tos-alisg-pve-0037c001/o0PCAfEwLwMIB6FER0ziAMAqhA2iIr7a0vHVJS/?a=0&bti=ODc5NWYtLjE6&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&cv=1&br=3298&bt=1649&cs=0&ds=3&ft=cApXJCz7ThWH5NVN1GZmo0P&mime_type=video_mp4&qs=0&rc=NjZpOGk0aTc6Ozo6ZTdkOkBpM2lqcG05cjk7OTMzODczNEA2NTVfNS0uXjYxYS4yLTA1YSMta2peMmRjNGxhLS1kMTFzcw%3D%3D&vvpl=1&l=202603152140357F139EB436BF8B3E2837&btag=e000a0000&cc=10",
+                  "url_expire": 1773603978,
+                  "width": 576,
+                  "height": 1024,
+                  "file_hash": "1c766c221d6c2a0f1ab03d2f4738c8fe",
+                  "format": "",
+                  "size": 72503487,
+                  "bitrate": 1689398,
+                  "video_quality": "normal"
+                }
+              ]
+            },
+            "name": "1000/10 este cepillo🥰✨ #cepilloalaciador #LANDOT #andreabaldenebro #dechava #tiktokshop ",
+            "release_date": "1773175803",
+            "item_id": "7615731988514802965",
+            "like_cnt": 597,
+            "play_cnt": 6224,
+            "comment_cnt": 25,
+            "video_products": [
+              {
+                "name": "LANDOT Cepillo Eléctrico Alisador de Pelo: Cepillo Plano Para Alisar con Calor - Cepillo Alisador de Cerámica con Tecnología Iónica - Temperatura regulable 120°C-230°C",
+                "image": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/283e05b0db0340139835a4a511a93f96~tplv-aphluv4xwc-origin-webp.webp?dr=15572&from=3049088325&idc=my&ps=933b5bde&shcp=1e1776da&shp=b5bd6545&t=555f072d",
+                "product_id": "1732878445214861086",
+                "min_sale_price": {
+                  "currency": "MXN",
+                  "price": "898",
+                  "formatted_price": "MX$898"
+                },
+                "max_sale_price": {
+                  "currency": "MXN",
+                  "price": "898",
+                  "formatted_price": "MX$898"
+                },
+                "promoted_product_num": "30",
+                "status": 1
+              }
+            ]
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "shop_collect_status": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_creator_blocked_by_shop": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_fast_growing": {
+        "value": true,
+        "is_authorized": true,
+        "status": 0
+      },
+      "units_sold": {
+        "value": "12",
+        "is_authorized": true,
+        "status": 0
+      },
+      "med_gmv_revenue": {
+        "value": {
+          "value": "2722.54",
+          "symbol": "MX$",
+          "format": "MX$2,722.5"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "has_collaborated": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "category": {
+        "value": [
+          {
+            "starling_key": "magellan_605248",
+            "name": "Fashion Accessories"
+          },
+          {
+            "starling_key": "magellan_601450",
+            "name": "Beauty & Personal Care"
+          },
+          {
+            "starling_key": "magellan_601152",
+            "name": "Womenswear & Underwear"
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_engagement": {
+        "value": 627,
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_gmv": {
+        "value": {
+          "value": "2431.47",
+          "symbol": "MX$",
+          "format": "MX$2,431.5"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "live_gmv": {
+        "value": {
+          "value": "291.07",
+          "symbol": "MX$",
+          "format": "MX$291.1"
+        },
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_engagement": {
+        "value": 1464,
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_avg_view_cnt": {
+        "value": "16753",
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_play_cnt_med": {
+        "value": "2221",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_play_cnt_med": {
+        "value": "7016",
+        "is_authorized": true,
+        "status": 0
+      },
+      "med_gmv_revenue_range": {
+        "value": "MX$1K-MX$10K",
+        "is_authorized": true,
+        "status": 0
+      },
+      "units_sold_range": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_follower_age": {
+        "value": [
+          {
+            "key": "25-34",
+            "value": null
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_follower_gender": {
+        "value": [
+          {
+            "key": "Female",
+            "value": "7549"
+          }
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_live_med_view_cnt": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_med_view_cnt": {
+        "value": "2221",
+        "is_authorized": true,
+        "status": 0
+      },
+      "ec_video_med_view_cnt": {
+        "value": "7016",
+        "is_authorized": true,
+        "status": 0
+      },
+      "video_med_share_cnt": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "top_follower_ages": {
+        "value": [
+          "25-34",
+          "18-24"
+        ],
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_permission_tag": {
+        "value": 2,
+        "is_authorized": true,
+        "status": 0
+      },
+      "recommend_reason": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_fulfillment_rate": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "has_invited_before_90d": {
+        "value": false,
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_level": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_fulfillment_reviews": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "creator_fulfillment_score_90d": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "pps_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_in_flat_fee_whitelist": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "is_rising_star": {
+        "value": true,
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_total_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_total_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_fulfillment_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_fulfillment_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_diligence_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_diligence_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_sales_ability_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_sales_ability_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_content_quality_score": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_content_quality_rank": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "sample_credit_evaluate_duration": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "vertical_pro_category": {
+        "is_authorized": true,
+        "status": 0
+      },
+      "vat": {
+        "is_authorized": true,
+        "status": 0
+      }
+    }
+  ]
+}

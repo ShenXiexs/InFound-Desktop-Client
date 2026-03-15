@@ -2,8 +2,6 @@ import { BaseWindow, session, WebContentsView } from 'electron'
 import { join } from 'path'
 import { logger } from '../utils/logger'
 import { AppConfig } from '@common/app-config'
-import { SampleManagementCrawler } from '../modules/rpa/sample-management/crawler'
-import { SampleManagementTabKey } from '../modules/rpa/sample-management/types'
 import type { BrowserPaginationResult, BrowserSelectorState } from '../modules/rpa/task-dsl/browser-actions'
 
 interface JsonResponseCaptureSession {
@@ -28,7 +26,6 @@ interface ScrollProgressResult {
 export class TkWcv {
   private baseWindow: BaseWindow | null = null
   private tkWCV: WebContentsView | null = null
-  private readonly sampleManagementCrawler = new SampleManagementCrawler()
   private loginMonitorTimer: ReturnType<typeof setInterval> | null = null
   private loginMonitorInProgress = false
   private loginMonitorStartedAt = 0
@@ -190,28 +187,6 @@ export class TkWcv {
     } finally {
       this.loginMonitorInProgress = false
     }
-  }
-
-  public async openSampleManagementView(): Promise<void> {
-    const ready = await this.ensureAffiliateHomepageReady()
-    if (!ready) {
-      logger.warn('尚未完成登录，继续等待任务指令')
-      return
-    }
-
-    const region = await this.resolveCurrentShopRegion()
-    const targetUrl = `https://affiliate.tiktok.com/product/sample-request?shop_region=${encodeURIComponent(region)}`
-    logger.info(`跳转样品管理页面: ${targetUrl}`)
-    await this.openView(targetUrl)
-  }
-
-  public async resolveAffiliateShopRegionOrThrow(): Promise<string> {
-    const ready = await this.ensureAffiliateHomepageReady()
-    if (!ready) {
-      throw new Error('尚未完成登录')
-    }
-
-    return this.resolveCurrentShopRegion()
   }
 
   public async waitForBodyText(text: string, timeoutMs = 30000, intervalMs = 500): Promise<boolean> {
@@ -1316,65 +1291,6 @@ export class TkWcv {
     await this.sleep(ms)
   }
 
-  public async executeStructuredDataExtraction<T>(script: string): Promise<T> {
-    const wc = this.tkWCV?.webContents
-    if (!wc || wc.isDestroyed()) {
-      throw new Error('WebContents 不可用，无法执行结构化数据提取')
-    }
-
-    return (await wc.executeJavaScript(script, true)) as T
-  }
-
-  public async crawlSampleManagementAndExportExcel(options?: { skipOpenSampleView?: boolean; tabs?: SampleManagementTabKey[] }): Promise<void> {
-    if (!options?.skipOpenSampleView) {
-      await this.openSampleManagementView()
-    }
-
-    const wc = this.tkWCV?.webContents
-    if (!wc || wc.isDestroyed()) {
-      logger.warn('样品管理爬取失败：WebContents 不可用')
-      return
-    }
-    if (!(await this.isOnSampleManagementPage())) {
-      logger.warn('样品管理爬取失败：当前不在样品管理页面')
-      return
-    }
-
-    const tabs = options?.tabs && options.tabs.length > 0 ? options.tabs : ['to_review', 'ready_to_ship', 'shipped', 'in_progress', 'completed']
-    const tabDisplayNames = tabs.map((tab) => {
-      switch (tab) {
-        case 'to_review':
-          return 'To review'
-        case 'ready_to_ship':
-          return 'Ready to ship'
-        case 'shipped':
-          return 'Shipped'
-        case 'in_progress':
-          return 'In progress'
-        case 'completed':
-          return 'Completed'
-      }
-    })
-    logger.info(`开始爬取样品管理标签：${tabDisplayNames.join(' + ')}`)
-    const result = await this.sampleManagementCrawler.crawlTabsAndExportExcel(wc, { tabs: options?.tabs })
-    logger.info(
-      `样品管理爬取完成: to_review_rows=${result.to_review.rows.length} to_review_pages=${result.to_review.pages_visited} ready_rows=${result.ready_to_ship.rows.length} ready_pages=${result.ready_to_ship.pages_visited} shipped_rows=${result.shipped.rows.length} shipped_pages=${result.shipped.pages_visited} in_progress_rows=${result.in_progress.rows.length} in_progress_pages=${result.in_progress.pages_visited} completed_rows=${result.completed.rows.length} completed_pages=${result.completed.pages_visited} excel=${result.excel_path}`
-    )
-  }
-
-  private async isOnSampleManagementPage(): Promise<boolean> {
-    const wc = this.tkWCV?.webContents
-    if (!wc || wc.isDestroyed()) {
-      return false
-    }
-    try {
-      const href = String(await wc.executeJavaScript('location.href'))
-      return href.startsWith('https://affiliate.tiktok.com/product/sample-request')
-    } catch {
-      return false
-    }
-  }
-
   private async ensureAffiliateHomepageReady(): Promise<boolean> {
     if (this.isAffiliateHomepageReady) {
       return true
@@ -1547,25 +1463,6 @@ export class TkWcv {
       scrollTop: Number(current.scrollTop ?? 0),
       maxScrollTop: Number(current.maxScrollTop ?? 0)
     }
-  }
-
-  private async resolveCurrentShopRegion(): Promise<string> {
-    const wc = this.tkWCV?.webContents
-    if (!wc || wc.isDestroyed()) {
-      return this.lastShopRegion
-    }
-
-    try {
-      const href = String(await wc.executeJavaScript('location.href'))
-      const region = this.extractShopRegion(href)
-      if (region) {
-        this.lastShopRegion = region
-      }
-    } catch (err) {
-      logger.warn(`读取当前页面 URL 失败，使用最近 region: ${this.lastShopRegion}`)
-    }
-
-    return this.lastShopRegion
   }
 
   private extractShopRegion(url: string): string | null {

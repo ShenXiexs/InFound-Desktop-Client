@@ -1,528 +1,191 @@
 # RPA 投送与启动参考
 
-启动命令统一总表见：
+启动总表见：
 
 - [rpa-startup-reference.md](./rpa-startup-reference.md)
 
-## 目的
+## 1. 目的
 
-这份文档只记录两类内容：
+这份文档只记录当前 Playwright 会话模型下的投送方式：
 
-1. 如何启动 `frontend.rpa.simulation`
-2. 如何用“投送指令”的方式触发四个机器人
+1. 如何启动会话
+2. 会话启动后如何单独投送 4 个机器人任务
 
-实现细节仍然看：
+## 2. 强制约束
 
-1. [rpa-outreach-implementation.md](./rpa-outreach-implementation.md)
-2. [rpa-chatbot-implementation.md](./rpa-chatbot-implementation.md)
-3. [rpa-creator-detail-implementation.md](./rpa-creator-detail-implementation.md)
-4. [rpa-sample-management-implementation.md](./rpa-sample-management-implementation.md)
+1. 当前所有机器人只允许跑在 `apps/frontend.rpa.simulation` 的 Playwright 会话中
+2. 不允许再走旧 Electron 机器人执行路径
+3. `RPA_EXECUTE_SIMULATION` 现在只负责启动会话，不负责自动执行任何机器人
+4. 任务必须在会话启动成功后再单独投送
 
-## 前置条件
+## 3. 启动 Playwright 会话
 
-1. 已安装依赖
-2. 已启动 `frontend.rpa.simulation`
-3. 已先执行店铺登录，且确认登录成功
-4. TikTok 店铺区域可正常识别
-
-强制约束：
-
-1. 建联机器人必须先登录成功。
-2. 样品管理机器人必须先登录成功。
-3. 聊天机器人必须先登录成功。
-4. 达人详情机器人也必须先登录成功。
-5. 当前不推荐通过显式界面按钮触发任务，统一走终端命令或 IPC 投送。
-
-## 启动应用
-
-当前 `apps/frontend.rpa.simulation/package.json` 里的 `dev` 脚本包含 Windows 的 `chcp 65001`，在 macOS 终端下不可用。
-
-在当前开发环境里，建议用下面的方式启动：
-
-```bash
-cd apps/frontend.rpa.simulation
-npx electron-vite dev --mode dev
-```
-
-类型检查：
-
-```bash
-cd apps/frontend.rpa.simulation
-npm run typecheck
-```
-
-## 建议的统一测试顺序
-
-1. 启动应用
-2. 先登录店铺
-3. 确认店铺区域正确
-4. 再投送对应机器人指令
-
-## 四个机器人启动方法
-
-### 1. 建联机器人
-
-终端最小启动：
-
-```text
-login
-outreach
-```
-
-终端 demo：
-
-```text
-login
-outreach-demo
-```
-
-终端 JSON：
-
-```text
-login
-outreach-json docs/examples/outreach-demo-payload.json
-```
-
-IPC：
+### 3.1 默认启动
 
 ```ts
-window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH, payload)
+window.ipc.send(IPC_CHANNELS.RPA_EXECUTE_SIMULATION)
 ```
 
-建联任务示例：
+默认效果：
 
-```text
-login
-outreach-json docs/examples/outreach-demo-payload.json
-```
+1. `region = 'MX'`
+2. `headless = false`
+3. `storageStatePath = 'data/playwright/storage-state.json'`
+4. 如果找到 `storage-state.json`，浏览器会停留在 affiliate 首页待命
+5. 如果没找到 `storage-state.json`，浏览器会打开登录页等待手动登录
 
-最小示例 payload：
+### 3.2 自定义启动
 
-```json
-{
-  "creatorFilters": {
-    "productCategorySelections": [
-      "Home Supplies"
-    ],
-    "avgCommissionRate": "Less than 20%",
-    "contentType": "Video",
-    "creatorAgency": "Independent creators"
-  },
-  "followerFilters": {
-    "followerAgeSelections": [
-      "18 - 24",
-      "25 - 34"
-    ],
-    "followerGender": "Female"
-  },
-  "performanceFilters": {
-    "gmvSelections": [
-      "MX$100-MX$1K"
-    ],
-    "itemsSoldSelections": [
-      "10-100"
-    ],
-    "estPostRate": "Good"
-  },
-  "searchKeyword": "lipstick"
-}
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_EXECUTE_SIMULATION, {
+  region: 'MX',
+  headless: false,
+  storageStatePath: 'data/playwright/storage-state.json'
+})
 ```
 
 完整示例文件：
 
-`docs/examples/outreach-demo-payload.json`
+- `docs/examples/playwright-simulation-demo-payload.json`
 
-### 2. 样品管理机器人
+### 3.3 终端启动
 
-终端最小启动：
-
-```text
-login
-sample-management
+```bash
+start-simulation
+start-simulation-headless
+start-simulation-json docs/examples/playwright-simulation-demo-payload.json
 ```
 
-如果现在要执行样品管理当前的 4 tab API 抓取：
+## 4. 任务投送时机
 
-```text
-login
-sample-management
-```
+只有在 Playwright 会话已经启动并保持待命之后，才可以发送下面这些任务指令：
 
-只打开页面：
+1. `RPA_SELLER_OUT_REACH`
+2. `RPA_SAMPLE_MANAGEMENT`
+3. `RPA_SELLER_CHATBOT`
+4. `RPA_SELLER_CREATOR_DETAIL`
 
-```text
-login
-open-sample-management
-```
+如果会话未启动，任务会直接失败。
+如果会话当前还停留在手动登录页，则应先完成登录，再投送任务。
 
-说明：
+## 5. 建联任务投送
 
-1. 样品管理当前没有单独 JSON payload 投送入口。
-2. 当前主要通过终端命令触发。
-3. 当前 `sample-management` 默认抓 `To review + Ready to ship + Shipped + In progress + Completed`。
-
-### 3. 聊天机器人
-
-终端最小启动：
-
-```text
-login
-chatbot <creator_id>
-```
-
-示例：
-
-```text
-login
-chatbot 7493999107359083121
-```
-
-终端 demo：
-
-```text
-login
-chatbot-demo
-```
-
-终端 JSON：
-
-```text
-login
-chatbot-json docs/examples/chatbot-demo-payload.json
-```
-
-IPC：
+### 5.1 默认投送
 
 ```ts
-window.ipc.send(IPC_CHANNELS.RPA_SELLER_CHATBOT, payload)
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH)
 ```
 
-### 4. 达人详情机器人
+这会使用建联 demo payload。
 
-终端最小启动：
-
-```text
-login
-creator-detail <creator_id>
-```
-
-示例：
-
-```text
-login
-creator-detail 7495400123324336701
-```
-
-终端 demo：
-
-```text
-login
-creator-detail-demo
-```
-
-终端 JSON：
-
-```text
-login
-creator-detail-json docs/examples/creator-detail-demo-payload.json
-```
-
-IPC：
+### 5.2 自定义投送
 
 ```ts
-window.ipc.send(IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL, payload)
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH, {
+  creatorFilters: {
+    productCategorySelections: ['Home Supplies']
+  }
+})
 ```
 
-## 界面按钮说明
+示例文件：
 
-当前界面只保留最小登录入口：
+- `docs/examples/outreach-demo-payload.json`
 
-1. `登录店铺`
+## 6. 样品管理任务投送
 
-说明：
-
-1. 其他机器人任务不再推荐通过显式按钮触发。
-2. 建联、样品管理、聊天机器人、达人详情统一使用终端命令或 IPC。
-
-## 启动方式二：终端命令
-
-开发模式下，主进程会开启终端命令行：
-
-```text
-xunda-rpa>
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT)
 ```
 
-可用命令：
+页面默认会先落在 `To review`；如果指定了别的 tab，运行时会先点到目标 tab 再抓接口。
 
-```text
-login
+默认会抓：
+
+1. `To review`
+2. `Ready to ship`
+3. `Shipped`
+4. `In progress`
+5. `Completed`
+
+也可以指定某个 tab 或一组 tabs：
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT, {
+  tab: 'completed'
+})
+```
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT, {
+  tabs: ['to_review', 'completed']
+})
+```
+
+示例文件：
+
+- `docs/examples/sample-management-completed-payload.json`
+
+终端写法：
+
+```bash
 sample-management
-open-sample-management
+sample-management completed
+sample-management to_review,completed
+sample-management-json docs/examples/sample-management-completed-payload.json
+```
+
+## 7. 聊天任务投送
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_CHATBOT, {
+  creatorId: '7493999107359083121',
+  message: 'halo'
+})
+```
+
+示例文件：
+
+- `docs/examples/chatbot-demo-payload.json`
+- `docs/examples/chatbot-halo-payload.json`
+
+## 8. 达人详情任务投送
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL, {
+  creatorId: '7495400123324336701'
+})
+```
+
+示例文件：
+
+- `docs/examples/creator-detail-demo-payload.json`
+
+## 9. 终端任务投送
+
+当前终端命令也全部走同一条 Playwright 会话：
+
+```bash
+sample-management
+sample-management completed
+sample-management to_review,completed
+sample-management-json docs/examples/sample-management-completed-payload.json
 outreach
 outreach-demo
-outreach-json <payload.json>
-chatbot <creator_id>
-chatbot-demo
-chatbot-json <payload.json>
-creator-detail <creator_id>
-creator-detail-demo
-creator-detail-json <payload.json>
-help
-exit
-```
-
-推荐测试顺序：
-
-```text
-login
-outreach-demo
-```
-
-如果要投送 JSON 文件：
-
-```text
 outreach-json docs/examples/outreach-demo-payload.json
-```
-
-聊天机器人推荐测试顺序：
-
-```text
-login
-chatbot-demo
-```
-
-如果只给达人 id，系统会使用默认消息：
-
-```text
 chatbot 7493999107359083121
-```
-
-如果要投送聊天 JSON：
-
-```text
+chatbot-demo
 chatbot-json docs/examples/chatbot-demo-payload.json
-```
-
-达人详情机器人推荐测试顺序：
-
-```text
-login
-creator-detail-demo
-```
-
-如果只给达人 id：
-
-```text
 creator-detail 7495400123324336701
-```
-
-如果现在要抓取达人 `7494007128896931516`：
-
-```text
-login
-creator-detail 7494007128896931516
-```
-
-如果要投送详情 JSON：
-
-```text
+creator-detail-demo
 creator-detail-json docs/examples/creator-detail-demo-payload.json
 ```
 
-## 启动方式三：渲染进程 IPC 投送
+## 10. 任务执行时的页面跳转
 
-建联通道：
+任务执行时，Playwright 会跳转到这些页面：
 
-```ts
-IPC_CHANNELS.RPA_SELLER_OUT_REACH
-```
-
-发送方式：
-
-```ts
-window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH, payload)
-```
-
-其中 `payload` 类型为：
-
-```ts
-OutreachFilterConfigInput
-```
-
-聊天机器人通道：
-
-```ts
-IPC_CHANNELS.RPA_SELLER_CHATBOT
-```
-
-发送方式：
-
-```ts
-window.ipc.send(IPC_CHANNELS.RPA_SELLER_CHATBOT, payload)
-```
-
-其中 `payload` 类型为：
-
-```ts
-SellerChatbotPayloadInput
-```
-
-达人详情通道：
-
-```ts
-IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL
-```
-
-发送方式：
-
-```ts
-window.ipc.send(IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL, payload)
-```
-
-其中 `payload` 类型为：
-
-```ts
-SellerCreatorDetailPayloadInput
-```
-
-## 完整测试 payload 示例
-
-当前仓库已经放了一份完整参考：
-
-`docs/examples/outreach-demo-payload.json`
-
-示例内容如下：
-
-```json
-{
-  "creatorFilters": {
-    "productCategorySelections": [
-      "Home Supplies",
-      "Beauty & Personal Care",
-      "Phones & Electronics"
-    ],
-    "avgCommissionRate": "Less than 20%",
-    "contentType": "Video",
-    "creatorAgency": "Independent creators",
-    "spotlightCreator": true,
-    "fastGrowing": true,
-    "notInvitedInPast90Days": true
-  },
-  "followerFilters": {
-    "followerAgeSelections": [
-      "18 - 24",
-      "25 - 34"
-    ],
-    "followerGender": "Female",
-    "followerCountMin": "10000",
-    "followerCountMax": "200000"
-  },
-  "performanceFilters": {
-    "gmvSelections": [
-      "MX$100-MX$1K",
-      "MX$1K-MX$10K"
-    ],
-    "itemsSoldSelections": [
-      "10-100",
-      "100-1K"
-    ],
-    "averageViewsPerVideoMin": "1000",
-    "averageViewsPerVideoShoppableVideosOnly": true,
-    "averageViewersPerLiveMin": "300",
-    "averageViewersPerLiveShoppableLiveOnly": true,
-    "engagementRateMinPercent": "5",
-    "engagementRateShoppableVideosOnly": true,
-    "estPostRate": "Good",
-    "brandCollaborationSelections": [
-      "L'OREAL PROFESSIONNEL",
-      "Maybelline New York",
-      "NYX Professional Makeup"
-    ]
-  },
-  "searchKeyword": "lipstick"
-}
-```
-
-## 示例 payload 的测试目的
-
-这份 demo payload 尽量覆盖了当前已实现的搜索条件：
-
-1. `Creators`
-   - 多选类目
-   - 单选 commission
-   - 单选 content type
-   - 单选 creator agency
-   - 3 个布尔 checkbox
-
-2. `Followers`
-   - 多选年龄
-   - 单选性别
-   - 区间 follower count
-
-3. `Performance`
-   - 多选 GMV
-   - 多选 Items sold
-   - 3 个 threshold 输入
-   - 3 个附加 checkbox
-   - 单选 Est. post rate
-   - 多选 Brand collaborations
-
-4. 最后搜索框
-   - `searchKeyword = "lipstick"`
-
-## 注意事项
-
-1. `shop_region` 不是通过 payload 指定，而是从当前登录店铺自动解析
-2. `Brand collaborations` 走文本匹配，如果页面当前品牌列表里没有对应项，会跳过该品牌并继续执行后续搜索与抓取
-3. payload 允许只传局部字段，未传部分会回退到默认值
-4. 空的 `searchKeyword` 不会跳过最后一步；系统会提交一次空搜索，用于触发最终结果集刷新和达人列表采集
-5. 建联任务执行完成后，会额外输出两份达人采集文件：
-   - `data/outreach/creator_marketplace_<timestamp>.json`
-   - `data/outreach/creator_marketplace_raw_<timestamp>.json`
-
-## 聊天机器人 payload 示例
-
-当前仓库也放了一份聊天机器人参考：
-
-`docs/examples/chatbot-demo-payload.json`
-
-示例内容如下：
-
-```json
-{
-  "creatorId": "7493999107359083121",
-  "message": "Hola 😊\n\nSoy Natalie Cueto, Social Media Partnership Specialist de GOKOCO México.\nEstamos buscando creadores con un estilo auténtico para colaborar con nosotros en contenido de cuidado personal y belleza inteligente.\n\nNos encantaría enviarte uno de nuestros productos para que lo pruebes y, si te gusta, compartir tu experiencia con tu comunidad.\nAdemás, la colaboración incluye comisión por cada venta generada a través de tus recomendaciones.\n\nSi te interesa, con gusto te comparto más detalles.\nQuedo atenta."
-}
-```
-
-## 聊天机器人注意事项
-
-1. `shop_region` 仍然不是 payload 传入，而是从当前登录店铺自动解析。
-2. 聊天任务会把发送前后的聊天内容落到：
-   - `data/chatbot/seller_chatbot_session_<timestamp>.md`
-3. 当前一次只支持一个 `creatorId`。
-4. `message` 允许不传；不传时回退到主进程内置默认消息。
-5. 当前发送成功判断规则是：读取聊天区中最下面一条商家消息，并与本次发送内容比对；最多重试 3 次。
-
-## 达人详情机器人 payload 示例
-
-当前仓库也放了一份达人详情机器人的参考：
-
-`docs/examples/creator-detail-demo-payload.json`
-
-示例内容如下：
-
-```json
-{
-  "creatorId": "7495400123324336701"
-}
-```
-
-## 达人详情机器人注意事项
-
-1. `shop_region` 仍然从当前登录店铺自动解析。
-2. 当前版本在详情页加载完成后，会直接抓取详情页 DOM 中的达人资料、指标卡、图例分布、视频列表和相关达人。
-3. 当前执行完成后会输出：
-   - `data/creator-detail/seller_creator_detail_<creator_id>_<timestamp>.json`
-   - `data/creator-detail/seller_creator_detail_<creator_id>_<timestamp>.xlsx`
-   - `data/creator-detail/seller_creator_detail_session_<timestamp>.md`
+1. 建联：`https://affiliate.tiktok.com/connection/creator?shop_region=<region>`
+2. 样品管理：`https://affiliate.tiktok.com/product/sample-request?shop_region=<region>`
+3. 聊天：`https://affiliate.tiktok.com/seller/im?creator_id=<creator_id>&shop_region=<region>`
+4. 达人详情：`https://affiliate.tiktok.com/connection/creator/detail?cid=<creator_id>&shop_region=<region>`

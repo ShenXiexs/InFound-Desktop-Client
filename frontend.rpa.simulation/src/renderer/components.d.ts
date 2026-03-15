@@ -18,7 +18,6 @@ declare module 'vue' {
     IHugeiconsMi: typeof import('~icons/hugeicons/mi')['default']
     IHugeiconsMinusSign: typeof import('~icons/hugeicons/minus-sign')['default']
     IHugeiconsSourceCode: typeof import('~icons/hugeicons/source-code')['default']
-    NAlert: typeof import('naive-ui')['NAlert']
     NButton: typeof import('naive-ui')['NButton']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     NFlex: typeof import('naive-ui')['NFlex']

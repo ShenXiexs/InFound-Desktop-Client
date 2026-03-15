@@ -21,19 +21,11 @@ export type BrowserAction =
       }
     })
   | (TaskStepBase & {
-      actionType: 'wait'
-      payload: {
-        ms: number
-      }
-    })
-  | (TaskStepBase & {
       actionType: 'waitForBodyText'
       payload: {
         text: string
         timeoutMs: number
         intervalMs?: number
-        retryGotoUrl?: string
-        retryGotoPostLoadMs?: number
       }
     })
   | (TaskStepBase & {
@@ -43,8 +35,6 @@ export type BrowserAction =
         state?: BrowserSelectorState
         timeoutMs: number
         intervalMs?: number
-        retryGotoUrl?: string
-        retryGotoPostLoadMs?: number
       }
     })
   | (TaskStepBase & {
@@ -93,6 +83,9 @@ export type BrowserAction =
         checked?: boolean
         timeoutMs?: number
         intervalMs?: number
+        scrollContainerSelector?: string
+        scrollStepPx?: number
+        maxScrollAttempts?: number
         postClickWaitMs?: number
       }
     })
@@ -239,49 +232,6 @@ export type BrowserAction =
       }
     })
   | (TaskStepBase & {
-      actionType: 'selectTab'
-      payload: {
-        label: string
-        tabSelector?: string
-        labelSelector?: string
-        timeoutMs?: number
-        intervalMs?: number
-        postClickWaitMs?: number
-      }
-    })
-  | (TaskStepBase & {
-      actionType: 'waitForElementCount'
-      payload: {
-        selector: string
-        minCount: number
-        timeoutMs: number
-        intervalMs?: number
-        saveAs?: string
-      }
-    })
-  | (TaskStepBase & {
-      actionType: 'clickPaginationNext'
-      payload: {
-        nextSelector?: string
-        disabledClassContains?: string
-        timeoutMs?: number
-        intervalMs?: number
-        postClickWaitMs?: number
-        allowNoMorePages?: boolean
-        saveAs?: string
-      }
-    })
-  | (TaskStepBase & {
-      actionType: 'closeDrawer'
-      payload: {
-        drawerSelector?: string
-        closeSelector?: string
-        timeoutMs?: number
-        intervalMs?: number
-        allowAbsent?: boolean
-      }
-    })
-  | (TaskStepBase & {
       actionType: 'startJsonResponseCapture'
       payload: {
         captureKey: string
@@ -319,13 +269,6 @@ export type BrowserAction =
         rawOutputFilePrefix?: string
         rawDirectoryOutputDir?: string
         rawDirectoryOutputPrefix?: string
-      }
-    })
-  | (TaskStepBase & {
-      actionType: 'setData'
-      payload: {
-        key: string
-        value: BrowserDataPrimitive
       }
     })
   | (TaskStepBase & {

@@ -1,12 +1,19 @@
 # XunDa RPA 样品管理爬取实现说明
 
-启动命令统一见：
+当前文档对应的执行入口是 `apps/frontend.rpa.simulation` 中的 Playwright 模拟链路：
 
-- [rpa-startup-reference.md](./rpa-startup-reference.md)
+- [../apps/frontend.rpa.simulation/rpa-playwright-simulation-plan.md](../apps/frontend.rpa.simulation/rpa-playwright-simulation-plan.md)
+
+说明：
+
+1. `登录店铺` 只负责准备登录态，不负责启动样品管理机器人。
+2. `启动RPA模拟` 只负责启动 Playwright 会话，不自动执行样品管理机器人。
+3. 样品管理机器人当前通过单独任务指令 `RPA_SAMPLE_MANAGEMENT` 投送到已启动的 Playwright 会话。
+4. Playwright 模拟会优先使用 `data/playwright/storage-state.json`；如果文件不存在，会打开登录页等待手动登录。
 
 ## 1. 当前实现范围
 
-当前样品管理主链路已经切到 API 响应解析，不再以旧的 DOM 逐列读取作为主方法。
+当前样品管理在 Playwright 模拟链路中已经切到 API 响应解析，不再以旧的 DOM 逐列读取作为主方法。
 
 当前默认抓取 5 个 tab：
 
@@ -24,81 +31,66 @@
 4. `Completed` 额外补抓：`GET /api/v1/affiliate/sample/performance`
 5. 导出方式：Excel
 
-## 2. 触发方式
+## 2. Playwright 模拟入口
 
-1. 启动应用：
-
-```bash
-cd apps/frontend.rpa.simulation
-npx electron-vite dev --mode dev
-```
-
-2. 终端执行登录：
-
-```text
-login
-```
-
-3. 登录成功后执行：
-
-```text
-sample-management
-```
-
-如果只想打开页面，不立即抓取：
-
-```text
-open-sample-management
-```
+1. 启动 `apps/frontend.rpa.simulation`。
+2. 可选地准备 Playwright 登录态文件：
+   - `data/playwright/storage-state.json`
+3. 点击渲染层按钮：
+   - `启动RPA模拟`
+4. Playwright 会话启动后，再投送：
+   - `RPA_SAMPLE_MANAGEMENT`
 
 说明：
 
-1. `sample-management` 当前默认抓取 `To review + Ready to ship + Shipped + In progress + Completed`。
-2. 样品管理当前没有单独 JSON payload 启动入口。
+1. 当前模拟链路中的样品管理默认抓取 `To review + Ready to ship + Shipped + In progress + Completed`。
+2. 当前支持通过 payload 指定某个 tab 或一组 tabs；未传时才按默认 5 个 tab 全抓。
 
 ## 3. 代码结构
 
-1. 入口与预检：
+1. Playwright 模拟入口与调度：
    - `apps/frontend.rpa.simulation/src/main/modules/ipc/rpa-controller.ts`
-2. 页面打开与运行：
-   - `apps/frontend.rpa.simulation/src/main/windows/tk-wcv.ts`
-3. API 解析 crawler：
-   - `apps/frontend.rpa.simulation/src/main/modules/rpa/sample-management/crawler.ts`
+2. Playwright 统一模拟服务：
+   - `apps/frontend.rpa.simulation/src/main/modules/rpa/playwright-simulation/playwright-simulation-service.ts`
+3. 样品管理 Playwright 独立 runner：
+   - `apps/frontend.rpa.simulation/src/main/modules/rpa/playwright-simulation/sample-management-playwright.ts`
 4. 类型：
    - `apps/frontend.rpa.simulation/src/main/modules/rpa/sample-management/types.ts`
+5. 解析与结构化逻辑：
+   - `apps/frontend.rpa.simulation/src/main/modules/rpa/sample-management/parser.ts`
+   - `apps/frontend.rpa.simulation/src/main/modules/rpa/sample-management/config.ts`
 
 ## 4. 当前抓取链路
 
-执行 `sample-management` 后，当前流程是：
+执行 `RPA_SAMPLE_MANAGEMENT` 后，样品管理阶段当前流程是：
 
-1. 跳到样品管理页面：
+1. Playwright 统一模拟服务进入样品管理阶段。
+2. 跳到样品管理页面：
    - `https://affiliate.tiktok.com/product/sample-request?shop_region=<region>`
-2. 等页面表格出现。
-3. 依次处理 5 个 tab：
-   - `To review`
-   - `Ready to ship`
-   - `Shipped`
-   - `In progress`
-   - `Completed`
-4. 每处理一个 tab：
+3. 等页面表格出现；页面默认先落在 `To review`。
+4. 根据 payload 决定要处理的 tab：
+   - 未传 payload：依次处理 5 个 tab
+   - 传 `tab` 或 `tabs`：只处理指定 tab
+5. 每处理一个 tab：
    - 启动 `sample/group/list` 响应捕获
-   - 如果是首个 tab，则重新加载当前页，保证首屏请求被捕获
+   - 如果是首个 tab 且目标是 `To review`，则重新加载当前页并直接抓首屏响应
+   - 如果是首个 tab 但目标不是 `To review`，则先让页面落在默认 `To review`，再点击目标 tab 抓该 tab 的首屏响应
    - 如果不是首个 tab，则点击 tab 文本切换到对应 tab
    - 解析当前页返回的最多 50 个达人分组或请求详情
    - 每个达人下的样品请求展开成多行，每个请求单独一行
    - 如果响应 `has_more !== false`，点击分页 `Next`
    - 等下一页新的 `sample/group/list` 响应
-5. `Completed` tab 额外处理：
+6. `Completed` tab 额外处理：
    - 逐行点击 `View Content`
    - 打开侧边页后依次切 `Video` 与 `LIVE`
    - 捕获 `sample/performance` 响应
    - 解析内容列表并汇总到当前行的 `content_summary`
    - 点击关闭按钮收起侧边页
-6. 重复处理，直到：
+7. 重复处理，直到：
    - API 返回 `has_more = false`
    - 或分页 `Next` 不可点击
    - 或长时间没有新的唯一页响应
-7. 5 个 tab 全部完成后导出 Excel。
+8. 指定的 tab 全部完成后导出 Excel，并保持当前 Playwright 会话继续待命。
 
 ## 5. 样品管理 API
 
@@ -346,4 +338,9 @@ xunda_sample_management_YYYYMMDD_HHMMSS.xlsx
    - `apply_detail.apply_info + apply_detail.creator_info`
 2. `Completed` 的 `View Content` 当前按“当前页可见行序 + creator/product 文本”定位行；如果页面后续引入虚拟滚动或行结构变动，这一层需要再收紧。
 3. 当前未导出 `sample/group/list` 与 `sample/performance` 的 raw JSON；若后续需要，可再补 raw 落盘。
-4. 当前没有单独 tab 级 payload 入口，`sample-management` 默认一次抓完 5 个 tab。
+4. 当前已支持 tab 级 payload 入口：
+   - `{"tab":"completed"}`
+   - `{"tabs":["to_review","completed"]}`
+5. CLI 也支持直接指定 tab：
+   - `sample-management completed`
+   - `sample-management to_review,completed`

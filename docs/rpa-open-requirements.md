@@ -14,6 +14,7 @@
 
 1. 基础可复用动作已抽取到 DSL：
    - `goto`
+   - `wait`
    - `waitForBodyText`
    - `waitForSelector`
    - `clickSelector`
@@ -27,14 +28,18 @@
    - `fillDropdownThreshold`
    - `pressKey`
    - `assertUrlContains`
+   - `selectTab`
+   - `waitForElementCount`
+   - `clickPaginationNext`
+   - `closeDrawer`
    - `startJsonResponseCapture`
    - `collectApiItemsByScrolling`
+   - `setData`
    - `readText`
    - `assertData`
    - `waitForTextChange`
-2. `RPAController` 当前保留顶层 `taskData`、任务入口与执行触发，业务常量/默认值/步骤构造已开始下沉到 support 模块。
+2. `RPAController` 当前保留顶层 `taskData`、任务入口、建联本地任务定义与执行触发。
 3. 建联任务已开始使用“基础动作 + 通用控件动作”DSL 执行。
-4. `waitForBodyText` / `waitForSelector` 的页面恢复逻辑已从 payload 字段收敛到统一 step-level `recovery`。
 
 未完成（关键）：
 

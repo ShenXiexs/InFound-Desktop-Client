@@ -2,18 +2,36 @@
 
 ## 1. 目的
 
-这份文档只保留一类信息：
+这份文档只记录 `apps/frontend.rpa.simulation` 当前唯一有效的机器人启动模型：
 
-1. 如何启动 `frontend.rpa.simulation`
-2. 如何登录
-3. 四个机器人的直接启动命令
-4. 常用 demo / JSON 示例命令
+1. 先启动一个常驻 Playwright 会话
+2. 会话启动后保持待命，不自动执行机器人
+3. 后续再单独投送建联、样品管理、聊天机器人、达人详情任务
 
-实现细节、字段说明、DOM 规则分别看各机器人实现文档。
+参考文档：
 
-## 2. 启动应用
+- [rpa-dispatch-reference.md](./rpa-dispatch-reference.md)
+- [rpa-development-guide.md](./rpa-development-guide.md)
+- [rpa-outreach-implementation.md](./rpa-outreach-implementation.md)
+- [rpa-sample-management-implementation.md](./rpa-sample-management-implementation.md)
+- [rpa-chatbot-implementation.md](./rpa-chatbot-implementation.md)
+- [rpa-creator-detail-implementation.md](./rpa-creator-detail-implementation.md)
+- [rpa-playwright-simulation-plan.md](./rpa-playwright-simulation-plan.md)
+- [../apps/frontend.rpa.simulation/rpa-playwright-simulation-plan.md](../apps/frontend.rpa.simulation/rpa-playwright-simulation-plan.md)
 
-在项目根目录执行：
+## 2. 当前是否已实现
+
+当前 `frontend.rpa.simulation` 中的 4 个机器人已经接到 Playwright 会话链路：
+
+1. `RPA_EXECUTE_SIMULATION` 只负责启动 Playwright 会话
+2. `RPA_SELLER_OUT_REACH` 只负责向已启动会话投送建联任务
+3. `RPA_SAMPLE_MANAGEMENT` 只负责向已启动会话投送样品管理任务
+4. `RPA_SELLER_CHATBOT` 只负责向已启动会话投送聊天任务
+5. `RPA_SELLER_CREATOR_DETAIL` 只负责向已启动会话投送达人详情任务
+
+旧 Electron 机器人执行路径已从 `frontend.rpa.simulation` 主链移除；当前保留 Electron 的只有 `登录店铺` 用于登录态准备。
+
+## 3. 启动应用
 
 ```bash
 cd apps/frontend.rpa.simulation
@@ -27,300 +45,170 @@ cd apps/frontend.rpa.simulation
 npm run typecheck
 ```
 
-## 3. 登录前置
+## 4. 启动前置
 
-所有机器人都必须先登录成功。
-
-终端执行：
+当前 Playwright 会话默认会尝试使用：
 
 ```text
-login
-```
-
-登录成功后的当前行为：
-
-1. 系统会记录登录态和 `shop_region`
-2. 页面保持当前页，不再自动跳到 affiliate 首页
-3. 后续任务会自己跳到目标页面
-
-建议以这条日志作为登录成功标志：
-
-```text
-已记录登录态与店铺区域: shop_region=<region>，等待后续任务指令
-```
-
-## 4. 建联机器人
-
-最小启动：
-
-```text
-login
-outreach
-```
-
-demo：
-
-```text
-login
-outreach-demo
-```
-
-JSON：
-
-```text
-login
-outreach-json docs/examples/outreach-demo-payload.json
-```
-
-## 5. 样品管理机器人
-
-当前 4 tab API 抓取：
-
-```text
-login
-sample-management
-```
-
-只打开页面：
-
-```text
-login
-open-sample-management
+data/playwright/storage-state.json
 ```
 
 说明：
 
-1. 样品管理当前没有单独的 JSON payload 启动命令
-2. 当前 `sample-management` 默认抓 `To review + Ready to ship + Shipped + In progress + Completed`
+1. 当前不自动桥接 Electron 登录态到 Playwright
+2. `登录店铺` 不会启动机器人
+3. `启动RPA模拟` 只会启动 Playwright 浏览器并待命
+4. 如果 `storage-state.json` 存在，会直接带登录态进入 affiliate 首页
+5. 如果 `storage-state.json` 不存在，不再报错；会直接打开登录页面等待手动操作
+6. 如果请求无头启动但又找不到 `storage-state.json`，会自动切回有头模式
 
-## 6. 聊天机器人
+## 5. 如何启动 Playwright 会话
 
-最小启动：
+### 5.1 界面按钮
 
-```text
-login
-chatbot <creator_id>
+在 `frontend.rpa.simulation` 中点击：
+
+- `启动RPA模拟`
+
+当前行为：
+
+1. 启动一个 Playwright Chromium 会话
+2. 默认 `headless = false`，也就是默认有头
+3. 如果存在 `storage-state.json`，会打开并停留在：
+   - `https://affiliate.tiktok.com/platform/homepage?shop_region=<region>`
+4. 如果不存在 `storage-state.json`，会打开：
+   - `https://seller-mx.tiktok.com/`
+   并等待手动登录
+5. 会话保持待命，不自动执行任何机器人
+
+### 5.2 IPC 启动
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_EXECUTE_SIMULATION)
 ```
 
-示例：
+自定义启动 payload：
 
-```text
-login
-chatbot 7493999107359083121
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_EXECUTE_SIMULATION, {
+  region: 'MX',
+  headless: false,
+  storageStatePath: 'data/playwright/storage-state.json'
+})
 ```
 
-demo：
+当前 payload 结构：
 
-```text
-login
-chatbot-demo
+```ts
+{
+  region?: string
+  headless?: boolean
+  storageStatePath?: string
+}
 ```
 
-JSON：
+默认值：
 
-```text
-login
-chatbot-json docs/examples/chatbot-demo-payload.json
+1. `region = 'MX'`
+2. `headless = false`
+3. `storageStatePath = 'data/playwright/storage-state.json'`
+
+完整示例：
+
+- `docs/examples/playwright-simulation-demo-payload.json`
+
+### 5.3 终端启动
+
+当前终端命令也遵守同一套模型：
+
+```bash
+start-simulation
+start-simulation-headless
+start-simulation-json docs/examples/playwright-simulation-demo-payload.json
 ```
 
-自定义消息示例：
+## 6. 启动后如何投送任务
 
-```text
-login
-chatbot-json docs/examples/chatbot-halo-payload.json
+Playwright 会话启动完成后，再投送单独任务指令。
+
+### 6.1 建联
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH)
 ```
 
-## 7. 达人详情机器人
+或带自定义 payload：
 
-最小启动：
-
-```text
-login
-creator-detail <creator_id>
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_OUT_REACH, outreachPayload)
 ```
 
-示例：
+### 6.2 样品管理
 
-```text
-login
-creator-detail 7494007128896931516
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT)
 ```
 
-demo：
+页面默认会先落在 `To review`；如果指定了其他 tab，运行时会从默认页点击切过去再抓。
 
-```text
-login
-creator-detail-demo
+指定单个 tab：
+
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT, {
+  tab: 'completed'
+})
 ```
 
-JSON：
+指定多个 tab：
 
-```text
-login
-creator-detail-json docs/examples/creator-detail-demo-payload.json
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT, {
+  tabs: ['to_review', 'completed']
+})
 ```
 
-## 8. 常用完整顺序
+终端写法：
 
-### 8.1 建联
-
-```text
-login
-outreach-json docs/examples/outreach-demo-payload.json
-```
-
-其他常用建联写法：
-
-```text
-login
-outreach
-```
-
-```text
-login
-outreach-demo
-```
-
-### 8.2 样品管理
-
-```text
-login
+```bash
 sample-management
+sample-management completed
+sample-management to_review,completed
+sample-management-json docs/examples/sample-management-completed-payload.json
 ```
 
-当前含义：抓取 `To review + Ready to ship + Shipped + In progress + Completed` 的 API 数据并导出 Excel。
+### 6.3 聊天机器人
 
-```text
-login
-open-sample-management
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_CHATBOT, {
+  creatorId: '7493999107359083121',
+  message: 'halo'
+})
 ```
 
-### 8.3 聊天
+### 6.4 达人详情
 
-```text
-login
-chatbot-json docs/examples/chatbot-demo-payload.json
+```ts
+window.ipc.send(IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL, {
+  creatorId: '7495400123324336701'
+})
 ```
 
-```text
-login
-chatbot 7493999107359083121
-```
+## 7. 页面跳转是否和之前 Electron 一致
 
-```text
-login
-chatbot-json docs/examples/chatbot-halo-payload.json
-```
+是。任务真正执行时，Playwright 会跳到和之前 Electron 机器人相同的业务页面：
 
-### 8.4 达人详情
+1. 建联：`https://affiliate.tiktok.com/connection/creator?shop_region=<region>`
+2. 样品管理：`https://affiliate.tiktok.com/product/sample-request?shop_region=<region>`
+3. 聊天：`https://affiliate.tiktok.com/seller/im?creator_id=<creator_id>&shop_region=<region>`
+4. 达人详情：`https://affiliate.tiktok.com/connection/creator/detail?cid=<creator_id>&shop_region=<region>`
 
-```text
-login
-creator-detail 7494007128896931516
-```
+区别只在于：
 
-```text
-login
-creator-detail-demo
-```
+1. 现在这些页面跳转发生在已启动的 Playwright 会话里
+2. 启动会话本身不会自动串行跑四个机器人
 
-```text
-login
-creator-detail-json docs/examples/creator-detail-demo-payload.json
-```
+## 8. 当前边界
 
-## 9. 命令示例速查
-
-下面这些命令都在应用启动后，输入到 `xunda-rpa>` 提示符里。
-
-### 9.1 建联机器人
-
-```text
-login
-outreach
-```
-
-```text
-login
-outreach-demo
-```
-
-```text
-login
-outreach-json docs/examples/outreach-demo-payload.json
-```
-
-### 9.2 样品管理机器人
-
-```text
-login
-sample-management
-```
-
-```text
-login
-open-sample-management
-```
-
-### 9.3 聊天机器人
-
-```text
-login
-chatbot 7493999107359083121
-```
-
-```text
-login
-chatbot-demo
-```
-
-```text
-login
-chatbot-json docs/examples/chatbot-demo-payload.json
-```
-
-```text
-login
-chatbot-json docs/examples/chatbot-halo-payload.json
-```
-
-### 9.4 达人详情机器人
-
-```text
-login
-creator-detail 7494007128896931516
-```
-
-```text
-login
-creator-detail-demo
-```
-
-```text
-login
-creator-detail-json docs/examples/creator-detail-demo-payload.json
-```
-
-## 10. 示例文件
-
-1. 建联：`docs/examples/outreach-demo-payload.json`
-2. 聊天：`docs/examples/chatbot-demo-payload.json`
-3. 聊天自定义：`docs/examples/chatbot-halo-payload.json`
-4. 达人详情：`docs/examples/creator-detail-demo-payload.json`
-
-## 11. 可用终端命令总览
-
-```text
-login
-sample-management
-open-sample-management
-outreach
-outreach-demo
-outreach-json <payload.json>
-chatbot <creator_id>
-chatbot-demo
-chatbot-json <payload.json>
-creator-detail <creator_id>
-creator-detail-demo
-creator-detail-json <payload.json>
-```
+1. 当前所有机器人只允许走 Playwright 会话，不准走旧 Electron 机器人路径
+2. 当前没有“启动会话后自动串行执行四个机器人”的入口
+3. 当前如果未先启动 Playwright 会话就直接投送任务，会直接报错

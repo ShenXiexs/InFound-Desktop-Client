@@ -1,9 +1,5 @@
-export type SampleManagementTabKey =
-  | 'to_review'
-  | 'ready_to_ship'
-  | 'shipped'
-  | 'in_progress'
-  | 'completed'
+import type { SampleManagementTabKey } from '@common/types/rpa-sample-management'
+export type { SampleManagementTabKey } from '@common/types/rpa-sample-management'
 
 export interface SampleManagementRow {
   crawl_time: string

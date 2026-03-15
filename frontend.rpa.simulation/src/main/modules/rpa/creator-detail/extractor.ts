@@ -1,7 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import * as XLSX from 'xlsx'
-import type { CreatorDetailLegendMap, CreatorDetailVideoItem, SellerCreatorDetailData } from '@common/types/rpa-creator-detail'
+import type { SellerCreatorDetailData } from '@common/types/rpa-creator-detail'
 
 const buildLocalTimestamp = (): string => {
   const now = new Date()
@@ -22,10 +21,64 @@ const sanitizeFileToken = (value: string): string => {
   return cleaned || 'unknown'
 }
 
-const mapToRows = (source: CreatorDetailLegendMap): Array<{ label: string; value: string }> =>
-  Object.entries(source || {}).map(([label, value]) => ({ label, value }))
-
 const toJsonString = (value: unknown): string => JSON.stringify(value ?? null)
+
+const escapeCsvValue = (value: unknown): string => {
+  const text = String(value ?? '')
+  if (!/[",\n\r]/.test(text)) return text
+  return `"${text.replace(/"/g, '""')}"`
+}
+
+const buildCreatorDetailCsvRow = (detail: SellerCreatorDetailData): Record<string, string> => ({
+  creator_id: detail.creator_id,
+  region: detail.region,
+  target_url: detail.target_url,
+  collected_at_utc: detail.collected_at_utc,
+  creator_name: detail.creator_name,
+  creator_rating: detail.creator_rating,
+  creator_review_count: detail.creator_review_count,
+  creator_followers_count: detail.creator_followers_count,
+  creator_mcn: detail.creator_mcn,
+  creator_intro: detail.creator_intro,
+  gmv: detail.gmv,
+  items_sold: detail.items_sold,
+  gpm: detail.gpm,
+  gmv_per_customer: detail.gmv_per_customer,
+  est_post_rate: detail.est_post_rate,
+  avg_commission_rate: detail.avg_commission_rate,
+  products: detail.products,
+  brand_collaborations: detail.brand_collaborations,
+  brands_list: detail.brands_list,
+  product_price: detail.product_price,
+  video_gpm: detail.video_gpm,
+  videos_count: detail.videos_count,
+  avg_video_views: detail.avg_video_views,
+  avg_video_engagement: detail.avg_video_engagement,
+  avg_video_likes: detail.avg_video_likes,
+  avg_video_comments: detail.avg_video_comments,
+  avg_video_shares: detail.avg_video_shares,
+  live_gpm: detail.live_gpm,
+  live_streams: detail.live_streams,
+  avg_live_views: detail.avg_live_views,
+  avg_live_engagement: detail.avg_live_engagement,
+  avg_live_likes: detail.avg_live_likes,
+  avg_live_comments: detail.avg_live_comments,
+  avg_live_shares: detail.avg_live_shares,
+  gmv_per_sales_channel: toJsonString(detail.gmv_per_sales_channel),
+  gmv_by_product_category: toJsonString(detail.gmv_by_product_category),
+  follower_gender: toJsonString(detail.follower_gender),
+  follower_age: toJsonString(detail.follower_age),
+  videos_list: toJsonString(detail.videos_list),
+  videos_with_product: toJsonString(detail.videos_with_product),
+  relative_creators: toJsonString(detail.relative_creators)
+})
+
+const toSingleRowCsv = (row: Record<string, string>): string => {
+  const headers = Object.keys(row)
+  const headerLine = headers.map((header) => escapeCsvValue(header)).join(',')
+  const valueLine = headers.map((header) => escapeCsvValue(row[header])).join(',')
+  return `${headerLine}\n${valueLine}\n`
+}
 
 export const buildSellerCreatorDetailExtractionScript = (): string => String.raw`
 (async () => {
@@ -96,6 +149,20 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
     return true
   }
 
+  const strongClickNode = async (node) => {
+    if (!(node instanceof HTMLElement)) return false
+    if (typeof node.scrollIntoView === 'function') {
+      node.scrollIntoView({ block: 'center', inline: 'center' })
+    }
+    node.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerType: 'mouse' }))
+    node.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+    node.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true, pointerType: 'mouse' }))
+    node.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }))
+    const clicked = clickNode(node)
+    await sleep(180)
+    return clicked
+  }
+
   const resolveScrollContainer = () => {
     const preferred = document.querySelector('#modern_sub_app_container_connection')
     if (preferred instanceof HTMLElement) return preferred
@@ -155,8 +222,7 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
     return null
   }
 
-  const getMetricCardValue = (label) => {
-    const card = findMetricCard(label)
+  const getMetricCardValueFromCard = (card, label) => {
     if (!(card instanceof HTMLElement)) return ''
 
     const preferredValue =
@@ -171,6 +237,42 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
       .find((text) => text && text.toLowerCase() !== normalizeText(label).toLowerCase())
 
     return fallbackValue || ''
+  }
+
+  const getMetricCardValue = (label) => {
+    const card = findMetricCard(label)
+    if (!(card instanceof HTMLElement)) return ''
+    return getMetricCardValueFromCard(card, label)
+  }
+
+  const metricValueCache = {}
+
+  const cacheVisibleMetricValues = () => {
+    const cards = getVisibleElements('div[data-e2e="f6855061-9011-24ab"]')
+    cards.forEach((card) => {
+      if (!(card instanceof HTMLElement)) return
+      const labelNode =
+        getVisibleElements('span[data-e2e="61148565-2ea3-4c1b"]', card)[0] ||
+        getVisibleElements('span, div', card).find((node) => Boolean(getText(node))) ||
+        null
+      const label = getText(labelNode)
+      if (!label) return
+      const value = getMetricCardValueFromCard(card, label)
+      if (value) {
+        metricValueCache[label] = value
+      }
+    })
+  }
+
+  const readMetricValue = (label) => {
+    const cachedValue = normalizeText(metricValueCache[label])
+    if (cachedValue) return cachedValue
+    const liveValue = getMetricCardValue(label)
+    if (liveValue) {
+      metricValueCache[label] = liveValue
+      return liveValue
+    }
+    return ''
   }
 
   const readLegendBlock = (index) => {
@@ -219,16 +321,85 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
     return uniqueBrands.join(',')
   }
 
-  const clickArrowByIndex = async (index, readyLabel) => {
-    const arrows = getVisibleElements('div[data-e2e="7a7839d9-8fa5-dd75"]')
-    const target = arrows[index]
-    if (!(target instanceof HTMLElement)) return false
-    clickNode(target)
-    await sleep(250)
-    if (readyLabel) {
-      await waitUntil(() => Boolean(getMetricCardValue(readyLabel)), 8000, 200)
+  const queryXPathElements = (xpath) => {
+    const snapshot = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+    const results = []
+    for (let index = 0; index < snapshot.snapshotLength; index += 1) {
+      const node = snapshot.snapshotItem(index)
+      if (node instanceof HTMLElement && isVisible(node)) {
+        results.push(node)
+      }
+    }
+    return results
+  }
+
+  const getMetricCarouselArrows = () => {
+    const candidates = [
+      ...getVisibleElements('div[data-e2e="7a7839d9-8fa5-dd75"]'),
+      ...getVisibleElements(
+        'div.h-56.w-16.bg-neutral-bg1.ml-8.flex.flex-shrink-0.items-center.justify-center.text-neutral-text1.cursor-pointer'
+      ),
+      ...queryXPathElements(
+        '//*[starts-with(@id,"garfish_app_for_connection_")]//div[contains(@class,"h-56") and contains(@class,"w-16") and contains(@class,"bg-neutral-bg1") and contains(@class,"cursor-pointer") and .//*[contains(@class,"ArrowRight")]]'
+      )
+    ]
+    const uniqueCandidates = Array.from(new Set(candidates)).filter((node) =>
+      Boolean(node.querySelector('svg[class*="ArrowRight"], .alliance-icon-ArrowRight'))
+    )
+    return uniqueCandidates.sort((left, right) => {
+      const leftRect = left.getBoundingClientRect()
+      const rightRect = right.getBoundingClientRect()
+      if (Math.abs(leftRect.top - rightRect.top) > 6) {
+        return leftRect.top - rightRect.top
+      }
+      return leftRect.left - rightRect.left
+    })
+  }
+
+  const waitForMetricLabels = async (labels, timeoutMs = 8000) => {
+    const expectedLabels = Array.isArray(labels) ? labels : labels ? [labels] : []
+    if (expectedLabels.length > 0) {
+      return waitUntil(() => expectedLabels.some((label) => Boolean(getMetricCardValue(label))), timeoutMs, 200)
     }
     return true
+  }
+
+  const clickArrowByIndex = async (index, readyLabels) => {
+    const expectedLabels = Array.isArray(readyLabels) ? readyLabels : readyLabels ? [readyLabels] : []
+    if (expectedLabels.length > 0 && expectedLabels.some((label) => Boolean(getMetricCardValue(label)))) {
+      cacheVisibleMetricValues()
+      return true
+    }
+
+    const arrows = getMetricCarouselArrows()
+    const preferredArrow = arrows[index]
+    const orderedCandidates = preferredArrow
+      ? [preferredArrow, ...arrows.filter((node) => node !== preferredArrow)]
+      : arrows
+
+    for (const candidate of orderedCandidates) {
+      await strongClickNode(candidate)
+      const ready = await waitForMetricLabels(expectedLabels, 5000)
+      cacheVisibleMetricValues()
+      if (ready || expectedLabels.length === 0) {
+        return true
+      }
+    }
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const refreshedCandidates = getMetricCarouselArrows()
+      const retryTarget = refreshedCandidates[index]
+      if (!(retryTarget instanceof HTMLElement)) break
+      await strongClickNode(retryTarget)
+      const ready = await waitForMetricLabels(expectedLabels, 5000)
+      cacheVisibleMetricValues()
+      if (ready || expectedLabels.length === 0) {
+        return true
+      }
+    }
+
+    cacheVisibleMetricValues()
+    return expectedLabels.length === 0 ? orderedCandidates.length > 0 : expectedLabels.some((label) => Boolean(getMetricCardValue(label)))
   }
 
   const findSectionByHeading = (headingText) => {
@@ -359,9 +530,10 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
   const introNode = getVisibleElements('span[data-e2e="2e9732e6-4d06-458d"]')[0] || null
 
   const brandsList = await readTopBrands()
-  await clickArrowByIndex(0, 'Product price')
-  await clickArrowByIndex(1, 'Avg. video likes')
-  await clickArrowByIndex(2, 'Avg. LIVE likes')
+  cacheVisibleMetricValues()
+  await clickArrowByIndex(0, ['Product price'])
+  await clickArrowByIndex(1, ['Est. post rate', 'Avg. video likes', 'Avg. video comments', 'Avg. video shares'])
+  await clickArrowByIndex(2, ['LIVE GPM', 'LIVE streams', 'Avg. LIVE views'])
 
   const url = new URL(location.href)
 
@@ -376,30 +548,30 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
     creator_followers_count: getText(followerValueNode),
     creator_mcn: getText(mcnValueNode),
     creator_intro: getText(introNode, true),
-    gmv: getMetricCardValue('GMV'),
-    items_sold: getMetricCardValue('Items sold'),
-    gpm: getMetricCardValue('GPM'),
-    gmv_per_customer: getMetricCardValue('GMV per customer'),
-    est_post_rate: getMetricCardValue('Est. post rate'),
-    avg_commission_rate: getMetricCardValue('Avg. commission rate'),
-    products: getMetricCardValue('Products'),
-    brand_collaborations: getMetricCardValue('Brand collaborations'),
+    gmv: readMetricValue('GMV'),
+    items_sold: readMetricValue('Items sold'),
+    gpm: readMetricValue('GPM'),
+    gmv_per_customer: readMetricValue('GMV per customer'),
+    est_post_rate: readMetricValue('Est. post rate'),
+    avg_commission_rate: readMetricValue('Avg. commission rate'),
+    products: readMetricValue('Products'),
+    brand_collaborations: readMetricValue('Brand collaborations'),
     brands_list: brandsList,
-    product_price: getMetricCardValue('Product price'),
-    video_gpm: getMetricCardValue('Video GPM'),
-    videos_count: getMetricCardValue('Videos'),
-    avg_video_views: getMetricCardValue('Avg. video views'),
-    avg_video_engagement: getMetricCardValue('Avg. video engagement rate'),
-    avg_video_likes: getMetricCardValue('Avg. video likes'),
-    avg_video_comments: getMetricCardValue('Avg. video comments'),
-    avg_video_shares: getMetricCardValue('Avg. video shares'),
-    live_gpm: getMetricCardValue('LIVE GPM'),
-    live_streams: getMetricCardValue('LIVE streams'),
-    avg_live_views: getMetricCardValue('Avg. LIVE views'),
-    avg_live_engagement: getMetricCardValue('Avg. LIVE engagement rate'),
-    avg_live_likes: getMetricCardValue('Avg. LIVE likes'),
-    avg_live_comments: getMetricCardValue('Avg. LIVE comments'),
-    avg_live_shares: getMetricCardValue('Avg. LIVE shares'),
+    product_price: readMetricValue('Product price'),
+    video_gpm: readMetricValue('Video GPM'),
+    videos_count: readMetricValue('Videos'),
+    avg_video_views: readMetricValue('Avg. video views'),
+    avg_video_engagement: readMetricValue('Avg. video engagement rate'),
+    avg_video_likes: readMetricValue('Avg. video likes'),
+    avg_video_comments: readMetricValue('Avg. video comments'),
+    avg_video_shares: readMetricValue('Avg. video shares'),
+    live_gpm: readMetricValue('LIVE GPM'),
+    live_streams: readMetricValue('LIVE streams'),
+    avg_live_views: readMetricValue('Avg. LIVE views'),
+    avg_live_engagement: readMetricValue('Avg. LIVE engagement rate'),
+    avg_live_likes: readMetricValue('Avg. LIVE likes'),
+    avg_live_comments: readMetricValue('Avg. LIVE comments'),
+    avg_live_shares: readMetricValue('Avg. LIVE shares'),
     gmv_per_sales_channel: readLegendBlock(0),
     gmv_by_product_category: readLegendBlock(1),
     follower_gender: readLegendBlock(2),
@@ -411,75 +583,16 @@ export const buildSellerCreatorDetailExtractionScript = (): string => String.raw
 })()
 `
 
-export const persistSellerCreatorDetailArtifacts = (detail: SellerCreatorDetailData): { jsonPath: string; xlsxPath: string } => {
+export const persistSellerCreatorDetailArtifacts = (detail: SellerCreatorDetailData): { jsonPath: string; csvPath: string } => {
   const outputDir = join(process.cwd(), 'data/creator-detail')
   mkdirSync(outputDir, { recursive: true })
 
   const timestamp = buildLocalTimestamp()
   const creatorToken = sanitizeFileToken(detail.creator_id || detail.creator_name || 'unknown')
   const jsonPath = join(outputDir, `seller_creator_detail_${creatorToken}_${timestamp}.json`)
-  const xlsxPath = join(outputDir, `seller_creator_detail_${creatorToken}_${timestamp}.xlsx`)
+  const csvPath = join(outputDir, `seller_creator_detail_${creatorToken}_${timestamp}.csv`)
 
   writeFileSync(jsonPath, JSON.stringify(detail, null, 2))
-
-  const workbook = XLSX.utils.book_new()
-  const summarySheet = XLSX.utils.json_to_sheet([
-    {
-      creator_id: detail.creator_id,
-      region: detail.region,
-      target_url: detail.target_url,
-      collected_at_utc: detail.collected_at_utc,
-      creator_name: detail.creator_name,
-      creator_rating: detail.creator_rating,
-      creator_review_count: detail.creator_review_count,
-      creator_followers_count: detail.creator_followers_count,
-      creator_mcn: detail.creator_mcn,
-      creator_intro: detail.creator_intro,
-      gmv: detail.gmv,
-      items_sold: detail.items_sold,
-      gpm: detail.gpm,
-      gmv_per_customer: detail.gmv_per_customer,
-      est_post_rate: detail.est_post_rate,
-      avg_commission_rate: detail.avg_commission_rate,
-      products: detail.products,
-      brand_collaborations: detail.brand_collaborations,
-      brands_list: detail.brands_list,
-      product_price: detail.product_price,
-      video_gpm: detail.video_gpm,
-      videos_count: detail.videos_count,
-      avg_video_views: detail.avg_video_views,
-      avg_video_engagement: detail.avg_video_engagement,
-      avg_video_likes: detail.avg_video_likes,
-      avg_video_comments: detail.avg_video_comments,
-      avg_video_shares: detail.avg_video_shares,
-      live_gpm: detail.live_gpm,
-      live_streams: detail.live_streams,
-      avg_live_views: detail.avg_live_views,
-      avg_live_engagement: detail.avg_live_engagement,
-      avg_live_likes: detail.avg_live_likes,
-      avg_live_comments: detail.avg_live_comments,
-      avg_live_shares: detail.avg_live_shares,
-      gmv_per_sales_channel: toJsonString(detail.gmv_per_sales_channel),
-      gmv_by_product_category: toJsonString(detail.gmv_by_product_category),
-      follower_gender: toJsonString(detail.follower_gender),
-      follower_age: toJsonString(detail.follower_age),
-      relative_creators: toJsonString(detail.relative_creators)
-    }
-  ])
-  XLSX.utils.book_append_sheet(workbook, summarySheet, 'summary')
-
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(mapToRows(detail.gmv_per_sales_channel)), 'gmv_channel')
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(mapToRows(detail.gmv_by_product_category)), 'gmv_category')
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(mapToRows(detail.follower_gender)), 'follower_gender')
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(mapToRows(detail.follower_age)), 'follower_age')
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(detail.videos_list), 'videos_list')
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(detail.videos_with_product), 'videos_with_product')
-  XLSX.utils.book_append_sheet(
-    workbook,
-    XLSX.utils.json_to_sheet(detail.relative_creators.map((creator_name) => ({ creator_name }))),
-    'relative_creators'
-  )
-
-  XLSX.writeFile(workbook, xlsxPath)
-  return { jsonPath, xlsxPath }
+  writeFileSync(csvPath, toSingleRowCsv(buildCreatorDetailCsvRow(detail)))
+  return { jsonPath, csvPath }
 }

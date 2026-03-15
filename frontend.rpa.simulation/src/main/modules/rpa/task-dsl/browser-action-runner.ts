@@ -4,7 +4,6 @@ import * as XLSX from 'xlsx'
 import {
   BrowserAction,
   BrowserApiCollectionField,
-  BrowserPaginationResult,
   BrowserTask,
   BrowserSelectorState
 } from './browser-actions'
@@ -51,23 +50,6 @@ export interface BrowserActionTarget {
   ): Promise<void>
   pressKey(key: string, options?: { native?: boolean }): Promise<void>
   getCurrentUrl(): Promise<string>
-  selectTab(
-    label: string,
-    options?: { tabSelector?: string; labelSelector?: string; timeoutMs?: number; intervalMs?: number }
-  ): Promise<boolean>
-  waitForElementCount(selector: string, options?: { minCount?: number; timeoutMs?: number; intervalMs?: number }): Promise<number>
-  clickPaginationNext(options?: {
-    nextSelector?: string
-    disabledClassContains?: string
-    timeoutMs?: number
-    intervalMs?: number
-  }): Promise<BrowserPaginationResult>
-  closeDrawer(options?: {
-    drawerSelector?: string
-    closeSelector?: string
-    timeoutMs?: number
-    intervalMs?: number
-  }): Promise<boolean>
   startJsonResponseCapture(options: { captureKey: string; urlIncludes: string; method?: string; reset?: boolean }): Promise<void>
   collectJsonResponsesByScrolling(options: {
     captureKey: string
@@ -388,9 +370,6 @@ export class BrowserActionRunner {
           await this.target.waitForDelay(postLoadWaitMs)
         }
       },
-      wait: async (action) => {
-        await this.target.waitForDelay(Math.max(0, Number(action.payload.ms)))
-      },
       waitForBodyText: async (action) => {
         const found = await this.target.waitForBodyText(
           action.payload.text,
@@ -401,11 +380,11 @@ export class BrowserActionRunner {
           return
         }
 
-        const retryGotoUrl = String(action.payload.retryGotoUrl || '')
-        if (retryGotoUrl) {
-          this.logger.warn(`未检测到文案 "${action.payload.text}"，执行重跳: ${retryGotoUrl}`)
-          await this.target.openView(retryGotoUrl)
-          const retryWait = Math.max(0, Number(action.payload.retryGotoPostLoadMs ?? 0))
+        const recoveryGotoUrl = String(action.recovery?.gotoUrl || '')
+        if (recoveryGotoUrl) {
+          this.logger.warn(`未检测到文案 "${action.payload.text}"，执行重跳: ${recoveryGotoUrl}`)
+          await this.target.openView(recoveryGotoUrl)
+          const retryWait = Math.max(0, Number(action.recovery?.postLoadWaitMs ?? 0))
           if (retryWait > 0) {
             await this.target.waitForDelay(retryWait)
           }
@@ -423,11 +402,11 @@ export class BrowserActionRunner {
           return
         }
 
-        const retryGotoUrl = String(action.payload.retryGotoUrl || '')
-        if (retryGotoUrl) {
-          this.logger.warn(`未满足选择器状态，执行重跳: ${retryGotoUrl}`)
-          await this.target.openView(retryGotoUrl)
-          const retryWait = Math.max(0, Number(action.payload.retryGotoPostLoadMs ?? 0))
+        const recoveryGotoUrl = String(action.recovery?.gotoUrl || '')
+        if (recoveryGotoUrl) {
+          this.logger.warn(`未满足选择器状态，执行重跳: ${recoveryGotoUrl}`)
+          await this.target.openView(recoveryGotoUrl)
+          const retryWait = Math.max(0, Number(action.recovery?.postLoadWaitMs ?? 0))
           if (retryWait > 0) {
             await this.target.waitForDelay(retryWait)
           }
@@ -503,7 +482,10 @@ export class BrowserActionRunner {
         await this.target.setCheckbox(action.payload.selector, {
           checked: action.payload.checked ?? true,
           timeoutMs: action.payload.timeoutMs,
-          intervalMs: action.payload.intervalMs
+          intervalMs: action.payload.intervalMs,
+          scrollContainerSelector: action.payload.scrollContainerSelector,
+          scrollStepPx: action.payload.scrollStepPx,
+          maxScrollAttempts: action.payload.maxScrollAttempts
         })
 
         const postClickWaitMs = Math.max(0, Number(action.payload.postClickWaitMs ?? 0))
@@ -778,66 +760,6 @@ export class BrowserActionRunner {
           throw new Error(`当前 URL 不包含关键字: keyword=${action.payload.keyword}, url=${currentUrl}`)
         }
       },
-      selectTab: async (action) => {
-        const ok = await this.target.selectTab(action.payload.label, {
-          tabSelector: action.payload.tabSelector,
-          labelSelector: action.payload.labelSelector,
-          timeoutMs: action.payload.timeoutMs,
-          intervalMs: action.payload.intervalMs
-        })
-        if (!ok) {
-          throw new Error(`Tab 选择失败: label=${action.payload.label}`)
-        }
-
-        const postClickWaitMs = Math.max(0, Number(action.payload.postClickWaitMs ?? 0))
-        if (postClickWaitMs > 0) {
-          await this.target.waitForDelay(postClickWaitMs)
-        }
-      },
-      waitForElementCount: async (action, context) => {
-        const minCount = Math.max(0, Number(action.payload.minCount))
-        const count = await this.target.waitForElementCount(action.payload.selector, {
-          minCount,
-          timeoutMs: Number(action.payload.timeoutMs),
-          intervalMs: Number(action.payload.intervalMs ?? 250)
-        })
-        if (count < minCount) {
-          throw new Error(`元素数量不足: selector=${action.payload.selector}, expected>=${minCount}, actual=${count}`)
-        }
-        if (action.payload.saveAs) {
-          context.data[action.payload.saveAs] = count
-        }
-      },
-      clickPaginationNext: async (action, context) => {
-        const result = await this.target.clickPaginationNext({
-          nextSelector: action.payload.nextSelector,
-          disabledClassContains: action.payload.disabledClassContains,
-          timeoutMs: action.payload.timeoutMs,
-          intervalMs: action.payload.intervalMs
-        })
-        if (action.payload.saveAs) {
-          context.data[action.payload.saveAs] = result
-        }
-        if (result === 'no_more_pages' && !Boolean(action.payload.allowNoMorePages)) {
-          throw new Error('分页已到末页，且当前步骤不允许 no_more_pages')
-        }
-
-        const postClickWaitMs = Math.max(0, Number(action.payload.postClickWaitMs ?? 0))
-        if (postClickWaitMs > 0) {
-          await this.target.waitForDelay(postClickWaitMs)
-        }
-      },
-      closeDrawer: async (action) => {
-        const closed = await this.target.closeDrawer({
-          drawerSelector: action.payload.drawerSelector,
-          closeSelector: action.payload.closeSelector,
-          timeoutMs: action.payload.timeoutMs,
-          intervalMs: action.payload.intervalMs
-        })
-        if (!closed && !Boolean(action.payload.allowAbsent)) {
-          throw new Error('关闭抽屉失败')
-        }
-      },
       startJsonResponseCapture: async (action) => {
         await this.target.startJsonResponseCapture({
           captureKey: action.payload.captureKey,
@@ -948,9 +870,6 @@ export class BrowserActionRunner {
           })
           context.data[action.payload.saveRawDirectoryPathAs] = rawDirectoryPath
         }
-      },
-      setData: async (action, context) => {
-        context.data[action.payload.key] = action.payload.value
       },
       readText: async (action, context) => {
         const value = await this.target.readText(action.payload.selector, {

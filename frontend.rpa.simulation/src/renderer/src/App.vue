@@ -32,6 +32,11 @@ const loginRPA = (): void => {
   window.logger.info('开始登录店铺')
   window.ipc.send(IPC_CHANNELS.RPA_SELLER_LOGIN)
 }
+
+const startRPASimulation = (): void => {
+  window.logger.info('开始启动 RPA 模拟会话')
+  window.ipc.send(IPC_CHANNELS.RPA_EXECUTE_SIMULATION)
+}
 </script>
 
 <template>
@@ -85,9 +90,10 @@ const loginRPA = (): void => {
         <n-layout-content>
           <n-flex vertical style="padding: 20px; gap: 16px">
             <n-button @click="loginRPA">登录店铺</n-button>
-            <n-alert type="info" title="任务触发方式">
-              建联、样品管理、聊天机器人、达人详情任务统一通过终端命令或 IPC 投送触发。
-              请先完成登录，再执行任何机器人任务。
+            <n-button type="primary" @click="startRPASimulation">启动RPA模拟</n-button>
+            <n-alert type="info" title="当前执行模型">
+              登录店铺只负责准备登录态。启动RPA模拟只会启动一个 Playwright 会话并停留在 affiliate 首页待命，不会自动执行任何机器人。
+              如果没有 storage-state，Playwright 会直接打开登录页等待手动操作。会话启动后，再通过特定任务指令投送建联、样品管理、聊天机器人或达人详情。
             </n-alert>
           </n-flex>
         </n-layout-content>
@@ -98,7 +104,7 @@ const loginRPA = (): void => {
 
 <style lang="scss" scoped>
 .header {
-  -webkit-app-region: drag; // 允许拖拽窗口
+  -webkit-app-region: drag;
   height: 40px;
   padding: 10px;
   display: flex;
@@ -126,33 +132,3 @@ const loginRPA = (): void => {
   }
 }
 </style>
-const outreachDemoPayload: OutreachFilterConfigInput = {
-  creatorFilters: {
-    productCategorySelections: ['Home Supplies', 'Beauty & Personal Care', 'Phones & Electronics'],
-    avgCommissionRate: 'Less than 20%',
-    contentType: 'Video',
-    creatorAgency: 'Independent creators',
-    spotlightCreator: true,
-    fastGrowing: true,
-    notInvitedInPast90Days: true
-  },
-  followerFilters: {
-    followerAgeSelections: ['18 - 24', '25 - 34'],
-    followerGender: 'Female',
-    followerCountMin: '10000',
-    followerCountMax: '200000'
-  },
-  performanceFilters: {
-    gmvSelections: ['MX$100-MX$1K', 'MX$1K-MX$10K'],
-    itemsSoldSelections: ['10-100', '100-1K'],
-    averageViewsPerVideoMin: '1000',
-    averageViewsPerVideoShoppableVideosOnly: true,
-    averageViewersPerLiveMin: '300',
-    averageViewersPerLiveShoppableLiveOnly: true,
-    engagementRateMinPercent: '5',
-    engagementRateShoppableVideosOnly: true,
-    estPostRate: 'Good',
-    brandCollaborationSelections: ['L\'Oréal Paris', 'Maybelline New York', 'NYX Professional Makeup']
-  },
-  searchKeyword: 'lipstick'
-}

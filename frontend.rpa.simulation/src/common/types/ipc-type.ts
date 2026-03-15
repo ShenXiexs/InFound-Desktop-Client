@@ -2,6 +2,8 @@ import { LoggerLevel } from '@infound/desktop-shared'
 import type { SellerChatbotPayloadInput } from './rpa-chatbot'
 import type { SellerCreatorDetailPayloadInput } from './rpa-creator-detail'
 import type { OutreachFilterConfigInput } from './rpa-outreach'
+import type { SampleManagementPayloadInput } from './rpa-sample-management'
+import type { PlaywrightSimulationPayloadInput } from './rpa-simulation'
 
 export const IPC_CHANNELS = {
   APP_LOGGER: 'app-logger',
@@ -15,7 +17,8 @@ export const IPC_CHANNELS = {
   RPA_SELLER_OUT_REACH: 'rpa-seller-out-reach',
   RPA_SELLER_CHATBOT: 'rpa-seller-chatbot',
   RPA_SELLER_CREATOR_DETAIL: 'rpa-seller-creator-detail',
-  RPA_SAMPLE_MANAGEMENT: 'rpa-sample-management'
+  RPA_SAMPLE_MANAGEMENT: 'rpa-sample-management',
+  RPA_EXECUTE_SIMULATION: 'rpa-execute-simulation'
 } as const
 
 export type IPCChannelKey = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]
@@ -31,7 +34,8 @@ export interface AppProtocol {
   [IPC_CHANNELS.RPA_SELLER_OUT_REACH]: { params: [OutreachFilterConfigInput?]; return: void }
   [IPC_CHANNELS.RPA_SELLER_CHATBOT]: { params: [SellerChatbotPayloadInput]; return: void }
   [IPC_CHANNELS.RPA_SELLER_CREATOR_DETAIL]: { params: [SellerCreatorDetailPayloadInput]; return: void }
-  [IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT]: { params: []; return: void }
+  [IPC_CHANNELS.RPA_SAMPLE_MANAGEMENT]: { params: [SampleManagementPayloadInput?]; return: void }
+  [IPC_CHANNELS.RPA_EXECUTE_SIMULATION]: { params: [PlaywrightSimulationPayloadInput?]; return: void }
 }
 
 export interface IPCAPI {
